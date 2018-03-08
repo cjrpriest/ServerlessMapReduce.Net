@@ -1,0 +1,24 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.0.0
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessMapReduceDotNet.Tests", "test\ServerlessMapReduceDotNet.Tests\ServerlessMapReduceDotNet.Tests.csproj", "{7B2D1B01-DC47-4A44-A12B-3043EC44FF45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessMapReduceDotNet", "src\ServerlessMapReduceDotNet\ServerlessMapReduceDotNet.csproj", "{6CA5112C-75C3-4B7F-A136-8D45774134F2}"
+EndProject
+Global
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B2D1B01-DC47-4A44-A12B-3043EC44FF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2D1B01-DC47-4A44-A12B-3043EC44FF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2D1B01-DC47-4A44-A12B-3043EC44FF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2D1B01-DC47-4A44-A12B-3043EC44FF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA5112C-75C3-4B7F-A136-8D45774134F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA5112C-75C3-4B7F-A136-8D45774134F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA5112C-75C3-4B7F-A136-8D45774134F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA5112C-75C3-4B7F-A136-8D45774134F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+EndGlobal

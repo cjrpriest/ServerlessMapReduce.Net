@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitoring</title>
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Worker Instance Count</th>
+                <th>Output Queue Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Raw Data</td>
+                <td>n/a</td>
+                <td>#rawDataQueueCount#</td>
+            </tr>
+            <tr>
+                <td>Ingester</td>
+                <td>#runningIngestersCount#</td>
+                <td>#ingestedQueueCount#</td>
+            </tr>
+            <tr>
+                <td>Mapper</td>
+                <td>#runningMappersCount#</td>
+                <td>#mappedQueueCount#</td>
+            </tr>
+            <tr>
+                <td>Reducer</td>
+                <td>#runningReducersCount#</td>
+                <td>#reducedQueueCount#</td>
+            </tr>
+            <tr>
+                <td>Final Reducer</td>
+                <td>#runningFinalReducersCount#</td>
+                <td>#finalReducedQueueCount#</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

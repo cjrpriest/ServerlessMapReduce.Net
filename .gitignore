@@ -1,0 +1,9 @@
+**/.idea/**/*
+**/.vscode/**/*
+
+[Bb]in/
+[Oo]bj/
+[Pp]ackages/
+
+.DS_Store
+

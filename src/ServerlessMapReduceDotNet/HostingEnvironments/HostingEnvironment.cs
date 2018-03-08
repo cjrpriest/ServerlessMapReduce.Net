@@ -1,0 +1,55 @@
+﻿using System;
+using AzureFromTheTrenches.Commanding.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using ServerlessMapReduceDotNet.Abstractions;
+
+namespace ServerlessMapReduceDotNet.HostingEnvironments
+{
+    public abstract class HostingEnvironment
+    {
+        public ICommandRegistry CommandRegistry { protected get; set; }
+        public IServiceCollection ServiceCollection { private get; set; }
+        
+        public abstract IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider);
+
+        public abstract IQueueClient QueueClientFactory(IServiceProvider serviceProvider);
+
+        public abstract IConfig ConfigFactory();
+
+        public abstract ITerminator TerminatorFactory();
+
+        public HostingEnvironment RegisterFireAndForgetFunction<TFunction, TCommand>()
+            where TFunction : class, IFireAndForgetFunction 
+            where TCommand : ICommand
+        {
+            ServiceCollection.AddTransient<TFunction>();
+            return RegisterFireAndForgetFunctionImpl<TFunction, TCommand>();
+        }
+        
+        protected abstract HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
+            where TFunction : IFireAndForgetFunction
+            where TCommand : ICommand;
+    }
+
+    public static class CommandRegistryExtensions
+    {
+        public static ICommandRegistry RegisterHostingEnvironment(this ICommandRegistry commandRegistry, HostingEnvironment hostingEnvironment)
+        {
+            hostingEnvironment.CommandRegistry = commandRegistry;
+            return commandRegistry;
+        }
+        
+        public static IServiceCollection RegisterHostingEnvironment(this IServiceCollection serviceCollection, HostingEnvironment hostingEnvironment)
+        {
+            hostingEnvironment.ServiceCollection = serviceCollection;
+
+            serviceCollection.AddSingleton(hostingEnvironment.ObjectStoreFactory);
+            serviceCollection.AddSingleton(hostingEnvironment.QueueClientFactory);
+            serviceCollection.AddSingleton(x => hostingEnvironment.ConfigFactory());
+            
+            serviceCollection.AddTransient(x => hostingEnvironment.TerminatorFactory());
+            
+            return serviceCollection;
+        }
+    }
+}
