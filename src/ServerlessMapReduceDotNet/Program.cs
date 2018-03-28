@@ -36,7 +36,9 @@ namespace ServerlessMapReduceDotNet
 
 
             var commandDispatcher = serviceProvider.GetService<IFrameworkCommandDispatcher>();
+#pragma warning disable 4014
             commandDispatcher.DispatchAsync(new WorkerManagerCommand());
+#pragma warning restore 4014
 
             var sw = new Stopwatch();
             sw.Start();
