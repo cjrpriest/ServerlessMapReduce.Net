@@ -9,6 +9,8 @@ using ServerlessMapReduceDotNet.Handlers;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.LambdaEntryPoints;
 using ServerlessMapReduceDotNet.Mappers;
+using ServerlessMapReduceDotNet.MapReduce.Handlers;
+using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;

@@ -7,7 +7,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 
-namespace ServerlessMapReduceDotNet.Handlers
+namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
 {
     public class UpdateMonitoringHandler : ICommandHandler<UpdateMonitoringCommand>
     {

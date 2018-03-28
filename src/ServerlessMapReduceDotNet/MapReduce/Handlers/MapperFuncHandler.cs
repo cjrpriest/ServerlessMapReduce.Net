@@ -5,7 +5,7 @@ using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Model;
 
-namespace ServerlessMapReduceDotNet.Handlers
+namespace ServerlessMapReduceDotNet.MapReduce.Handlers
 {
     public class MapperFuncHandler : ICommandHandler<MapperFuncCommand, KeyValuePairCollection>
     {
