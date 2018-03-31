@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.Handlers;
+using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 
@@ -16,7 +17,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         
         public override IConfig ConfigFactory() => new Config();
         
-        public override ITerminator TerminatorFactory() => new CommandLineTerminator();
+        public override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
 
         protected override HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
         {

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
+using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.ObjectStore;
 using Shouldly;
 
@@ -39,7 +40,7 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
                 var commandDispatcher = serviceProvider.GetService<ICommandDispatcher>();
                 await commandDispatcher.DispatchAsync(new WorkerManagerCommand());
 
-                WaitUntil(() => !IntegrationTestTerminator.ShouldRun);
+                await WaitUntil(async () => (await commandDispatcher.DispatchAsync(new IsTerminatedCommand())).Result);
 
                 var finalObjectKey = serviceProvider.GetService<IQueueClient>().Dequeue(serviceProvider.GetService<IConfig>().FinalReducedQueueName).Result.First().Message;
 
@@ -61,9 +62,9 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 
         }
 
-        private void WaitUntil(Func<bool> predicate)
+        private async Task WaitUntil(Func<Task<bool>> predicate)
         {
-            while (!predicate())
+            while (!await predicate())
                 Thread.Sleep(100);
         }
     }

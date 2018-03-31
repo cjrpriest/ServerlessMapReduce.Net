@@ -16,7 +16,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 
         public abstract IConfig ConfigFactory();
 
-        public abstract ITerminator TerminatorFactory();
+        public abstract Type TerminatorHandlerTypeFactory();
 
         public HostingEnvironment RegisterFireAndForgetFunction<TFunction, TCommand>()
             where TFunction : class, IFireAndForgetFunction 
@@ -29,6 +29,16 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         protected abstract HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
             where TFunction : IFireAndForgetFunction
             where TCommand : ICommand;
+
+        public HostingEnvironment RegisterMiscHandlers()
+        {
+            return RegisterMiscHandlersImpl(CommandRegistry);
+        }
+
+        protected virtual HostingEnvironment RegisterMiscHandlersImpl(ICommandRegistry commandRegistry)
+        {
+            return this;
+        }
     }
 
     public static class CommandRegistryExtensions
@@ -36,6 +46,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         public static ICommandRegistry RegisterHostingEnvironment(this ICommandRegistry commandRegistry, HostingEnvironment hostingEnvironment)
         {
             hostingEnvironment.CommandRegistry = commandRegistry;
+            commandRegistry.Register(hostingEnvironment.TerminatorHandlerTypeFactory());
             return commandRegistry;
         }
         
@@ -46,8 +57,6 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
             serviceCollection.AddSingleton(hostingEnvironment.ObjectStoreFactory);
             serviceCollection.AddSingleton(hostingEnvironment.QueueClientFactory);
             serviceCollection.AddSingleton(x => hostingEnvironment.ConfigFactory());
-            
-            serviceCollection.AddTransient(x => hostingEnvironment.TerminatorFactory());
             
             return serviceCollection;
         }

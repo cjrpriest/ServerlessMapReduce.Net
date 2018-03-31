@@ -52,7 +52,7 @@ namespace ServerlessMapReduceDotNet.Functions
             
             var jobComplete = await JobComplete(workerRecords); 
             if (jobComplete)
-                await _dispatcher.DispatchAsync(new TerminateProgramCommand());
+                await _dispatcher.DispatchAsync(new TerminateCommand());
             else
                 await _dispatcher.DispatchAsync(new WorkerManagerCommand());
             

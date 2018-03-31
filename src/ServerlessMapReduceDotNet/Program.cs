@@ -42,23 +42,29 @@ namespace ServerlessMapReduceDotNet
 
             var sw = new Stopwatch();
             sw.Start();
-            BlockUntilJobTerminates();
+            BlockUntilJobTerminates(commandDispatcher);
             sw.Stop();
             Console.WriteLine($"That took {sw.Elapsed.TotalSeconds:0.0}s");
         }
 
-        private static void BlockUntilJobTerminates()
+        private static async void BlockUntilJobTerminates(IFrameworkCommandDispatcher commandDispatcher)
         {
-            while (CommandLineTerminator.ShouldRun)
+            while (!await IsTerminated(commandDispatcher))
             {
-                WaitFor(TimeSpan.FromSeconds(1), () => CommandLineTerminator.ShouldRun);
+                await WaitFor(TimeSpan.FromSeconds(1), async () => !await IsTerminated(commandDispatcher));
             }
         }
 
-        private static void WaitFor(TimeSpan timeSpan, Func<bool> shouldRun)
+        private static async Task<bool> IsTerminated(IFrameworkCommandDispatcher commandDispatcher)
+        {
+            var isTerinatedCommandResult = await commandDispatcher.DispatchAsync(new IsTerminatedCommand());
+            return isTerinatedCommandResult.Result;
+        }
+
+        private static async Task WaitFor(TimeSpan timeSpan, Func<Task<bool>> predicate)
         {
             var returnTime = DateTime.UtcNow + timeSpan;
-            while (returnTime > DateTime.UtcNow && shouldRun())
+            while (returnTime > DateTime.UtcNow && await predicate())
                 Thread.Sleep(100);
         }
     }

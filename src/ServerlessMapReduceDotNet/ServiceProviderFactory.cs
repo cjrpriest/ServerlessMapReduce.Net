@@ -57,7 +57,6 @@ namespace ServerlessMapReduceDotNet
                 )
                 .UseCommanding()
                 .Register<UpdateMonitoringHandler>()
-                .Register<TerminateProgramHandler>()
                 .Register<MapperFuncHandler>()
                 .RegisterHostingEnvironment(hostingEnvironment);
 
@@ -66,7 +65,8 @@ namespace ServerlessMapReduceDotNet
                 .RegisterFireAndForgetFunction<Mapper, MapperCommand>()
                 .RegisterFireAndForgetFunction<Reducer, ReducerCommand>()
                 .RegisterFireAndForgetFunction<FinalReducer, FinalReducerCommand>()
-                .RegisterFireAndForgetFunction<WorkerManager, WorkerManagerCommand>();
+                .RegisterFireAndForgetFunction<WorkerManager, WorkerManagerCommand>()
+                .RegisterMiscHandlers();
             
             serviceProvider = serviceCollection.BuildServiceProvider();
 

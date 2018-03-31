@@ -1,7 +1,9 @@
 ﻿using System;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Handlers;
+using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.Queue.InMemory;
@@ -16,11 +18,17 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 
         public override IConfig ConfigFactory() => new IntegrationTestConfig();
         
-        public override ITerminator TerminatorFactory() => new IntegrationTestTerminator();
+        public override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
 
         protected override HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
         {
             CommandRegistry.Register<SyncHandler<TFunction, TCommand>>();
+            return this;
+        }
+
+        protected override HostingEnvironment RegisterMiscHandlersImpl(ICommandRegistry commandRegistry)
+        {
+            commandRegistry.Register<IsTerminatedCommandHandler>();
             return this;
         }
     }

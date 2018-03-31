@@ -12,25 +12,13 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public class AwsLambdaHostingEnvironment : HostingEnvironment
     {
-        public override IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider)
-        {
-            return serviceProvider.GetService<AmazonS3ObjectStore>();
-        }
+        public override IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonS3ObjectStore>();
 
-        public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider)
-        {
-            return serviceProvider.GetService<AmazonSqsQueueClient>();
-        }
+        public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonSqsQueueClient>();
 
-        public override IConfig ConfigFactory()
-        {
-            return new Config();
-        }
+        public override IConfig ConfigFactory() => new Config();
 
-        public override ITerminator TerminatorFactory()
-        {
-            return new AwsLambdaTerminator();
-        }
+        public override Type TerminatorHandlerTypeFactory() => typeof(AwsLambdaTerminator);
 
         protected override HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
         {
