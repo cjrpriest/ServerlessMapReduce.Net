@@ -154,15 +154,15 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             return IsAssignableToGenericType(baseType, genericType);
         }
         
-        public Action<ICommandDispatcher, object> Build<TCommandHandler>()
+        public Action<ICommandDispatcher, TCommandHandler> Build<TCommandHandler>()
         {
             var dynamicAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .First(x => x.GetName().Name == "CrispysDynamicAssembly");
             var registerItType = dynamicAssembly.GetType("RegisterIt");
             var register = Activator.CreateInstance(registerItType) as IRegister;
-            return (commandDispatcher, commandHandlerFunc) =>
+            return (commandDispatcher, commandHandler) =>
             {
-                register.DoIt(commandDispatcher, typeof(TCommandHandler), commandHandlerFunc);
+                register.DoIt(commandDispatcher, typeof(TCommandHandler), commandHandler);
             };
 
 
@@ -280,7 +280,7 @@ using NSubstitute;
 
 class RegisterIt : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock.IRegister
 {
-    public void DoIt(ICommandDispatcher commandDispatcher, Type commandHandlerType, object commandHandlerFactory)
+    public void DoIt(ICommandDispatcher commandDispatcher, Type commandHandlerType, object commandHandler)
     {
         switch (GetSafeFriendlyName(commandHandlerType))
         {
@@ -333,20 +333,20 @@ class RegisterIt : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherM
 
         private static string registerItSwitchOption = @"
             case ""SafeCommandHandlerName"":
-                Register_SafeCommandHandlerName(commandDispatcher, commandHandlerFactory);
+                Register_SafeCommandHandlerName(commandDispatcher, commandHandler);
                 break;
 ";
 
         private static string registerItMethod = @"
-    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerFactoryObj)
+    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
     {
-        var commandHandlerFactory = (Func<TCommandHandler>)commandHandlerFactoryObj;
+        var commandHandler = (TCommandHandler)commandHandlerObj;
 
         commandDispatcher
             .DispatchAsync(Arg.Any<TCommand>())
             .Returns(async ci =>
                 new CommandResult<TResult>(
-                    await commandHandlerFactory()
+                    await commandHandler
                         .ExecuteAsync(ci.Arg<TCommand>(), default(TResult)),
                     false
                 )

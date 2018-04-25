@@ -15,10 +15,8 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             var memoryObjectStoreData = new MemoryObjectStoreData();
 
             commandDispatcherMock
-                .Register<ListObjectKeysCommand, IReadOnlyCollection<ListedObject>, MemoryListObjectKeysCommandHandler>(
-                    () => new MemoryListObjectKeysCommandHandler(memoryObjectStoreData))
-                .Register<RetrieveObjectCommand, Stream, MemoryRetrieveObjectCommandHandler>(() =>
-                    new MemoryRetrieveObjectCommandHandler(memoryObjectStoreData))
+                .Register(new MemoryListObjectKeysCommandHandler(memoryObjectStoreData))
+                .Register(new MemoryRetrieveObjectCommandHandler(memoryObjectStoreData))
                 .Register<StoreObjectCommand, MemoryStoreObjectCommandHandler>(() => new MemoryStoreObjectCommandHandler(timeMock, memoryObjectStoreData));
 
             return commandDispatcherMock;

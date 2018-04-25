@@ -34,12 +34,9 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         }
         
         public static ICommandDispatcher Register<
-            TCommand,
-            TResult,
             TCommandHandler
-        >(this ICommandDispatcher commandDispatcherMock, Func<TCommandHandler> commandHandlerFactory)
-        where TCommand : ICommand<TResult>
-        where TCommandHandler : ICommandHandler<TCommand, TResult>
+        >(this ICommandDispatcher commandDispatcherMock, TCommandHandler commandHandler)
+        where TCommandHandler : ICommandHandler
         {
 /*
       This code executes the equivalent of this...
@@ -71,56 +68,8 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 
       without knowing TCommand or TResult in advance
 */
-//            commandDispatcherMock
-//                .DispatchAsync(Arg.Any<StoreObjectCommand>())
-//                .Returns(ci =>
-//                {
-//                    Task.FromResult(new MemoryStoreObjectCommandHandler(timeMock, memoryObjectStoreData)
-//                        .ExecuteAsync(ci.Arg<StoreObjectCommand>()));
-//                    return new CommandResult(false);
-//                });
-//            return commandDispatcherMock;
-
-//            commandDispatcherMock
-//                .DispatchAsync(Arg.Any<TCommand>())
-//                .Returns(async ci =>
-//                    //new Task<CommandResult<TResult>>(() =>
-//                        new CommandResult<TResult>(
-//                            await commandHandlerFactory()
-//                                .ExecuteAsync(ci.Arg<TCommand>(), default(TResult)),
-//                                //.Result,
-//                            false
-//                        )
-//                    //)
-//                );
-
-            //Expression<Func<ICommandDispatcher, Task<int>>> e = async cdm => await return 1;
-
-//            var dispatchAsyncExpression = RegisterCommandHandlerExpressionBuilder.BuildDispatchAsyncExpression(typeof(TResult),
-//                typeof(TCommand), Expression.Parameter(typeof(ICommandDispatcher)));
-//            var dispatchAsyncLambda = Expression.Lambda<Func<ICommandDispatcher, object>>(dispatchAsyncExpression).Compile();
-//
-//
-//            var commandResultTask = commandDispatcherMock.DispatchAsync(Arg.Any<TCommand>());
-////            var commandResultTask = (Task<>)dispatchAsyncLambda(commandDispatcherMock);
-//                
-//            commandResultTask.Returns(async ci =>
-//                    new CommandResult<TResult>(
-//                        await (Task<object>)commandHandlerFactory()
-//                            .ExecuteAsync(ci.Arg<TCommand>(), default(TResult)),
-//                        false
-//                    )
-//                );
-            
-            //new RegisterIt().DoIt<TCommand, TResult, TCommandHandler>(commandDispatcherMock, commandHandlerFactory);
-
-//            var expression = (Action<ICommandDispatcher, object>) new RegisterCommandHandlerExpressionBuilder2().Build<TCommandHandler>().Result;
-//            expression(commandDispatcherMock, commandHandlerFactory);
-//            
-//            return commandDispatcherMock;
-            
             var registerCommandHandlerExpression = new RegisterCommandHandlerExpressionBuilder2().Build<TCommandHandler>();
-            registerCommandHandlerExpression(commandDispatcherMock, commandHandlerFactory);
+            registerCommandHandlerExpression(commandDispatcherMock, commandHandler);
             
 //            var registerCommandHandler = registerCommandHandlerExpression.Compile();
 
