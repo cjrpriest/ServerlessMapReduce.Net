@@ -19,6 +19,8 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
     public class RegisterCommandHandlerExpressionBuilder2
     {
+        public const string DynamicAssemblyName = "ServerlessMapReduceDotNet.Tests.DynamicHelpers";
+        
         private const int CommandHandlerCommandTypeGenericArgPosition = 0;
         private const int CommandHandlerResultTypeGenericArgPosition = 1;
                 
@@ -31,9 +33,8 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             var commandHandlerTypes = targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerInterfaceType));
             var commandHandlerWithResultTypes = targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerWithResultInterfaceType));
 
-
-            var switchOptions = new List<string>();
-            var methods = new List<string>();
+            var switchOptionCodeChunks = new List<string>();
+            var methodCodeChunks = new List<string>();
             
             foreach (var commandHandlerWithResultType in commandHandlerWithResultTypes)
             {
@@ -50,45 +51,74 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                     ? commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerResultTypeGenericArgPosition]
                     : null;
 
-                var methodCode = registerItMethod
+                // TODO need to improve this to avoid clashes -- e.g. handlebars
+                var methodCode = RegisterCommandHandlerStubMethodTemplate
                     .Replace("TCommandHandler", GetFriendlyName(commandHandlerWithResultType))
                     .Replace("TCommand", GetFriendlyName(commandType))
                     .Replace("TResult", GetFriendlyName(resultType))
-                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType)); // TODO need to improve this to avoid clashes
+                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType)); 
                 
-                methods.Add(methodCode);
+                methodCodeChunks.Add(methodCode);
                 
-                var switchOptionCode = registerItSwitchOption
-                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType)); // TODO need to improve this to avoid clashes
+                var switchOptionCode = RegisterCommandHandlerStubSwitchOptionTemplate
+                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType));
                 
-                switchOptions.Add(switchOptionCode);
+                switchOptionCodeChunks.Add(switchOptionCode);
             }
 
             StringBuilder switchOptionsCode = new StringBuilder();
-            foreach (var switchOption in switchOptions)
+            foreach (var switchOption in switchOptionCodeChunks)
             {
                 switchOptionsCode.AppendLine(switchOption);
             }
 
             StringBuilder methodsCode = new StringBuilder();
-            foreach (var method in methods)
+            foreach (var method in methodCodeChunks)
             {
                 methodsCode.AppendLine(method);
             }
 
-            var finalCode = registerIt
+            var finalCode = RegisterCommandHandlerStubClassTemplate
                 .Replace("##switch_options##", switchOptionsCode.ToString())
                 .Replace("##methods##", methodsCode.ToString());
 
             Console.WriteLine(finalCode);
 
+            var assemblyReferences = GetAssemblyReferences();
+            
+            var syntaxTree = CSharpSyntaxTree.ParseText(finalCode);
+            var compilation = CSharpCompilation.Create(
+                DynamicAssemblyName, 
+                new [] { syntaxTree },
+                assemblyReferences,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            );
+            using (var ms = new MemoryStream())
+            {
+                var result = compilation.Emit(ms);
+                if (result.Success)
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    AssemblyLoadContext.Default.LoadFromStream(ms);
+                }
+                else
+                {
+                    foreach (var resultDiagnostic in result.Diagnostics)
+                    {
+                        Console.WriteLine(resultDiagnostic);
+                    }
+                }
+            }
+        }
+
+        private static PortableExecutableReference[] GetAssemblyReferences()
+        {
             var metaDataReferences = new[]
             {
                 MetadataReference.CreateFromFile(typeof(ICommandDispatcher).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(ThisAssembly).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Substitute).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(List<>).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
                 MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location),
@@ -102,39 +132,9 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                 MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location),
                     "System.Threading.Tasks.Extensions.dll")),
             };
-            
-            var syntaxTree = CSharpSyntaxTree.ParseText(finalCode);
-            var compilation = CSharpCompilation.Create(
-                "CrispysDynamicAssembly", 
-                new [] { syntaxTree },
-                metaDataReferences,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            );
-            using (var ms = new MemoryStream())
-            {
-                var result = compilation.Emit(ms);
-                if (result.Success)
-                {
-                    Console.WriteLine("yey it compiled and will probably work");
-                    ms.Seek(0, SeekOrigin.Begin);
-                    AssemblyLoadContext context = AssemblyLoadContext.Default;
-                    Assembly assembly = context.LoadFromStream(ms);
-                    //Assembly.Load(assembly.GetName());
-//                    var setupMockWithGeneric = assembly.GetType("RegisterIt");
-//                    var setItUp = Activator.CreateInstance(setupMockWithGeneric) as IRegister;
-//                    return (commandDispatcher, commandHandlerFactory) =>
-//                        setItUp.DoIt(commandDispatcher, null, commandHandlerFactory);
-                }
-                else
-                {
-                    foreach (var resultDiagnostic in result.Diagnostics)
-                    {
-                        Console.WriteLine(resultDiagnostic);
-                    }
-                }
-            }
+            return metaDataReferences;
         }
-        
+
         private static bool IsAssignableToGenericType(Type givenType, Type genericType)
         {
             var interfaceTypes = givenType.GetInterfaces();
@@ -157,82 +157,13 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         public Action<ICommandDispatcher, TCommandHandler> Build<TCommandHandler>()
         {
             var dynamicAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                .First(x => x.GetName().Name == "CrispysDynamicAssembly");
-            var registerItType = dynamicAssembly.GetType("RegisterIt");
-            var register = Activator.CreateInstance(registerItType) as IRegister;
+                .First(x => x.GetName().Name == DynamicAssemblyName);
+            var registerItType = dynamicAssembly.GetType("RegisterCommandHandlerStub");
+            var register = Activator.CreateInstance(registerItType) as IRegisterCommandHandlerStub;
             return (commandDispatcher, commandHandler) =>
             {
-                register.DoIt(commandDispatcher, typeof(TCommandHandler), commandHandler);
+                register.Register(commandDispatcher, typeof(TCommandHandler), commandHandler);
             };
-
-
-            var commandDispatcherParameter = Expression.Parameter(typeof(ICommandDispatcher));
-            var commandHandlerFactoryParameter = Expression.Parameter(typeof(Func<TCommandHandler>));
-
-            var commandHandlerWithResultInterfaceTypeGenericArguments = typeof(TCommandHandler)
-                .GetInterfaces()
-                .First(t => typeof(ICommandHandler).IsAssignableFrom(t) && t.IsGenericType)
-                .GetGenericArguments();
-
-            var commandHandlerHasResult = commandHandlerWithResultInterfaceTypeGenericArguments.Length == 2;
-
-            var commandType =
-                commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerCommandTypeGenericArgPosition];
-            var resultType = commandHandlerHasResult
-                ? commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerResultTypeGenericArgPosition]
-                : null;
-
-            var commandHandlerType = typeof(TCommandHandler).FullName;
-
-            // TODO use handlebars or something more resiliant
-            var code = registerIt
-                .Replace("TCommandHandler", GetFriendlyName(typeof(TCommandHandler)))
-                .Replace("TCommand", GetFriendlyName(commandType))
-                .Replace("TResult", GetFriendlyName(resultType));
-            
-            Console.WriteLine(code);
-            var syntaxTree = CSharpSyntaxTree.ParseText(code);
-            var compilation = CSharpCompilation.Create(
-                "CrispysDynamicAssembly", 
-                new [] { syntaxTree },
-                new [] {
-                    MetadataReference.CreateFromFile(typeof(ICommandDispatcher).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(ThisAssembly).Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Substitute).Assembly.Location),
-                    MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location),
-                    MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "netstandard.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Runtime.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Threading.Tasks.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Threading.Tasks.Extensions.dll")),
-                },
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            );
-            using (var ms = new MemoryStream())
-            {
-                var result = compilation.Emit(ms);
-                if (result.Success)
-                {
-                    Console.WriteLine("yey it compiled and will probably work");
-                    ms.Seek(0, SeekOrigin.Begin);
-                    AssemblyLoadContext context = AssemblyLoadContext.Default;
-                    Assembly assembly = context.LoadFromStream(ms);
-                    //Assembly.Load(assembly.GetName());
-                    var setupMockWithGeneric = assembly.GetType("RegisterIt");
-                    var setItUp = Activator.CreateInstance(setupMockWithGeneric) as IRegister;
-                    return (commandDispatcher, commandHandlerFactory) =>
-                        setItUp.DoIt(commandDispatcher, null, commandHandlerFactory);
-                }
-                else
-                {
-                    foreach (var resultDiagnostic in result.Diagnostics)
-                    {
-                        Console.WriteLine(resultDiagnostic);
-                    }
-                }
-            }
-
-            return null;
         }
 
         static string GetSafeFriendlyName(Type type)
@@ -271,16 +202,16 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                 return $"{type.Namespace}.{type.Name}";
         }
 
-        private static string registerIt = @"
+        private const string RegisterCommandHandlerStubClassTemplate = @"
 using System;
 using System.Linq;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using AzureFromTheTrenches.Commanding.Abstractions.Model;
 using NSubstitute;
 
-class RegisterIt : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock.IRegister
+class RegisterCommandHandlerStub : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock.IRegisterCommandHandlerStub
 {
-    public void DoIt(ICommandDispatcher commandDispatcher, Type commandHandlerType, object commandHandler)
+    public void Register(ICommandDispatcher commandDispatcher, Type commandHandlerType, object commandHandler)
     {
         switch (GetSafeFriendlyName(commandHandlerType))
         {
@@ -331,13 +262,13 @@ class RegisterIt : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherM
 }
 ";
 
-        private static string registerItSwitchOption = @"
+        private const string RegisterCommandHandlerStubSwitchOptionTemplate = @"
             case ""SafeCommandHandlerName"":
                 Register_SafeCommandHandlerName(commandDispatcher, commandHandler);
                 break;
 ";
 
-        private static string registerItMethod = @"
+        private static string RegisterCommandHandlerStubMethodTemplate = @"
     private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
     {
         var commandHandler = (TCommandHandler)commandHandlerObj;
@@ -353,10 +284,5 @@ class RegisterIt : ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherM
             );
     }
 ";
-    }
-
-    public interface IRegister
-    {
-        void DoIt(ICommandDispatcher commandDispatcher, Type commandHandlerType, object commandHandlerFactory);
     }
 }
