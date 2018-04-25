@@ -1,18 +1,17 @@
 ﻿using System;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.Handlers;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
-using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public class CommandLineLocalHostingEnvironment : HostingEnvironment
     {
-        public override IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<FileSystemObjectStore>();
-
         public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
         
         public override IConfig ConfigFactory() => new Config();
@@ -24,5 +23,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
             CommandRegistry.Register<AsyncHandler<TFunction, TCommand>>();
             return this;
         }
+
+        protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
     }
 }

@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
+using AzureFromTheTrenches.Commanding.Abstractions.Model;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Functions;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
@@ -20,11 +24,11 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.ReducedQueueName, 1)
                 .Build();
 
-            var objectStore = Substitute.For<IObjectStore>();
-            objectStore.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .Returns(new CommandResult<Stream>(StreamHelper.NewEmptyStream(), false));
 
-            var ingester = FinalReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStore);
+            var ingester = FinalReducerFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await ingester.InvokeAsync();
@@ -35,16 +39,16 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
 
         private FinalReducer FinalReducerFactory(
             IQueueClient queueClient = null,
-            IObjectStore objectStore = null,
             IConfig config = null,
-            IWorkerRecordStoreService workerRecordStoreService = null)
+            IWorkerRecordStoreService workerRecordStoreService = null,
+            ICommandDispatcher commandDispatcher = null)
         {
             queueClient = CheckParam(queueClient);
-            objectStore = CheckParam(objectStore);
             config = CheckParam(config);
             workerRecordStoreService = CheckParam(workerRecordStoreService);
+            commandDispatcher = CheckParam(commandDispatcher);
 
-            var finalReducer = new FinalReducer(objectStore, queueClient, config, workerRecordStoreService);
+            var finalReducer = new FinalReducer(queueClient, config, workerRecordStoreService, commandDispatcher);
 
             return finalReducer;
         }

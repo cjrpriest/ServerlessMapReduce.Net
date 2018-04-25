@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
-using ServerlessMapReduceDotNet.HostingEnvironments;
-using ServerlessMapReduceDotNet.ObjectStore;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
@@ -27,24 +27,28 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
                 var serviceProvider = new ServiceProviderFactory().Build(hostingEnvironment);
                 
                 var config = hostingEnvironment.ConfigFactory();
+
+                var commandDispatcher = serviceProvider.GetService<ICommandDispatcher>();
                 
                 using (var smallDataSetStream = Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream(typeof(Basic), "small-make-model-data-set.csv"))
                 {
-                    var objectStore = serviceProvider.GetService<IObjectStore>();
-                    await objectStore.StoreAsync("raw/smallDataSet.csv", smallDataSetStream);
+                    await commandDispatcher.DispatchAsync(new StoreObjectCommand
+                    {
+                        Key = "raw/smallDataSet.csv",
+                        DataStream = smallDataSetStream
+                    });
                 }
 
                 await serviceProvider.GetService<IQueueClient>().Enqueue(config.RawDataQueueName, "raw/smallDataSet.csv");
 
-                var commandDispatcher = serviceProvider.GetService<ICommandDispatcher>();
                 await commandDispatcher.DispatchAsync(new WorkerManagerCommand());
 
                 await WaitUntil(async () => (await commandDispatcher.DispatchAsync(new IsTerminatedCommand())).Result);
 
                 var finalObjectKey = serviceProvider.GetService<IQueueClient>().Dequeue(serviceProvider.GetService<IConfig>().FinalReducedQueueName).Result.First().Message;
 
-                var finalReductionResult = serviceProvider.GetService<IObjectStore>().GetObjectAsString("bucket-1", finalObjectKey);
+                var finalReductionResult = await commandDispatcher.GetObjectAsString(finalObjectKey);
                 finalReductionResult.Split(Environment.NewLine).Count(x => !string.IsNullOrEmpty(x)).ShouldBe(7);
                 finalReductionResult.ShouldContain("NULL,2");
                 finalReductionResult.ShouldContain("YAMAHA,1");

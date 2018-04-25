@@ -3,9 +3,11 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Functions;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
+using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests
 {
@@ -20,12 +22,14 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.IngestedQueueName, 1)
                 .Build();
 
-            var objectStore = NullObjectStoreFactory();
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+                commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                    .ReturnsCommandResult(StreamHelper.NewEmptyStream());
 
             var workerRecordStoreServiceMock = Substitute.For<IWorkerRecordStoreService>();
             workerRecordStoreServiceMock.GenerateUniqueId().Returns("abc123");
 
-            var mapper = MapperFactory(config: config, queueClient: queueClientMock, objectStore: objectStore, workerRecordStoreService: workerRecordStoreServiceMock);
+            var mapper = MapperFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher, workerRecordStoreService: workerRecordStoreServiceMock);
 
             // Act
             await mapper.InvokeAsync();
@@ -43,12 +47,14 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.IngestedQueueName, 0)
                 .Build();
 
-            var objectStore = NullObjectStoreFactory();
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream());
 
             var workerRecordStoreServiceMock = Substitute.For<IWorkerRecordStoreService>();
             workerRecordStoreServiceMock.GenerateUniqueId().Returns("abc123");
 
-            var mapper = MapperFactory(config: config, queueClient: queueClientMock, objectStore: objectStore, workerRecordStoreService: workerRecordStoreServiceMock);
+            var mapper = MapperFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher, workerRecordStoreService: workerRecordStoreServiceMock);
 
             // Act
             await mapper.InvokeAsync();
@@ -56,29 +62,19 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
             // Assert
             await workerRecordStoreServiceMock.Received().RecordHasTerminated(Arg.Is("mapper"), Arg.Is("abc123"));
         }
-
-        private IObjectStore NullObjectStoreFactory()
-        {
-            var objectStore = Substitute.For<IObjectStore>();
-            objectStore.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
-            return objectStore;
-        }
         
         private Mapper MapperFactory(
             IQueueClient queueClient = null,
-            IObjectStore objectStore = null,
             IConfig config = null,
             IWorkerRecordStoreService workerRecordStoreService = null,
             ICommandDispatcher commandDispatcher = null)
         {
             queueClient = CheckParam(queueClient);
-            objectStore = CheckParam(objectStore);
             config = CheckParam(config);
             workerRecordStoreService = CheckParam(workerRecordStoreService);
             commandDispatcher = CheckParam(commandDispatcher);
 
-            var mapper = new Mapper(queueClient, objectStore, config, workerRecordStoreService, commandDispatcher);
+            var mapper = new Mapper(queueClient, config, workerRecordStoreService, commandDispatcher);
 
             return mapper;
         }

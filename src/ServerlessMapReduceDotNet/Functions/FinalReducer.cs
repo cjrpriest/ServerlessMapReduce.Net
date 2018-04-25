@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.FinalReducers;
 using ServerlessMapReduceDotNet.Model;
 
@@ -11,17 +13,17 @@ namespace ServerlessMapReduceDotNet.Functions
 {
     public class FinalReducer : IFinalReducer
     {
-        private readonly IObjectStore _objectStore;
         private readonly IQueueClient _queueClient;
         private readonly IConfig _config;
         private readonly IWorkerRecordStoreService _workerRecordStoreService;
+        private readonly ICommandDispatcher _commandDispatcher;
 
-        public FinalReducer(IObjectStore objectStore, IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService)
+        public FinalReducer(IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService, ICommandDispatcher commandDispatcher)
         {
-            _objectStore = objectStore;
             _queueClient = queueClient;
             _config = config;
             _workerRecordStoreService = workerRecordStoreService;
+            _commandDispatcher = commandDispatcher;
         }
 
         public async Task InvokeAsync()
@@ -39,7 +41,7 @@ namespace ServerlessMapReduceDotNet.Functions
             
             var reducedQueueMessage = reducedQueueMessages.First();
 
-            using (var streamReader = new StreamReader(await _objectStore.RetrieveAsync($"{reducedQueueMessage.Message}")))
+            using (var streamReader = new StreamReader(await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = reducedQueueMessage.Message})))
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))
             {
@@ -59,7 +61,11 @@ namespace ServerlessMapReduceDotNet.Functions
                     await streamWriter.FlushAsync();
 
                     var finalObjectKey = $"{_config.FinalReducedFolder}/{Guid.NewGuid()}";
-                    await _objectStore.StoreAsync(finalObjectKey, memoryStream);
+                    await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+                    {
+                        Key = finalObjectKey,
+                        DataStream = memoryStream
+                    });
                     await _queueClient.Enqueue(_config.FinalReducedQueueName, finalObjectKey);
                 }
             }

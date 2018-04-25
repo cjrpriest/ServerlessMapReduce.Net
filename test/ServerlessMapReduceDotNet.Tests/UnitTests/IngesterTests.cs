@@ -1,10 +1,13 @@
 ﻿using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Functions;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
+using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests
 {
@@ -20,11 +23,12 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.RawDataQueueName, 1)
                 .Build();
 
-            var objectStore = Substitute.For<IObjectStore>();
-            objectStore.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher
+                .DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream());
 
-            var ingester = IngestorFactory(config: config, queueClient: queueClientMock, objectStore: objectStore);
+            var ingester = IngestorFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await ingester.InvokeAsync();
@@ -35,16 +39,16 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
 
         private Ingester IngestorFactory(
             IQueueClient queueClient = null,
-            IObjectStore objectStore = null,
             IConfig config = null,
-            IWorkerRecordStoreService workerRecordStoreService = null)
+            IWorkerRecordStoreService workerRecordStoreService = null,
+            ICommandDispatcher commandDispatcher = null)
         {
             queueClient = CheckParam(queueClient);
-            objectStore = CheckParam(objectStore);
             config = CheckParam(config);
             workerRecordStoreService = CheckParam(workerRecordStoreService);
+            commandDispatcher = CheckParam(commandDispatcher);
 
-            var ingester = new Ingester(objectStore, queueClient, config, workerRecordStoreService);
+            var ingester = new Ingester(queueClient, config, workerRecordStoreService, commandDispatcher);
 
             return ingester;
         }

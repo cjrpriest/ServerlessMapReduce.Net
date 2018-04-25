@@ -2,25 +2,27 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.Functions
 {
     public class Ingester : IIngester
     {
-        private readonly IObjectStore _objectStore;
         private readonly IQueueClient _queueClient;
         private readonly IConfig _config;
         private readonly IWorkerRecordStoreService _workerRecordStoreService;
+        private readonly ICommandDispatcher _commandDispatcher;
 
         private readonly Regex _keyRegex = new Regex(@".*/(?<objectName>.*?)$", RegexOptions.Compiled);
         
-        public Ingester(IObjectStore objectStore, IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService)
+        public Ingester(IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService, ICommandDispatcher commandDispatcher)
         {
-            _objectStore = objectStore;
             _queueClient = queueClient;
             _config = config;
             _workerRecordStoreService = workerRecordStoreService;
+            _commandDispatcher = commandDispatcher;
         }
 
         public async Task InvokeAsync()
@@ -38,7 +40,7 @@ namespace ServerlessMapReduceDotNet.Functions
             foreach (var rawDataQueueMessage in rawDataQueueMessages)
             {
                 var rawDataObjectKey = rawDataQueueMessage.Message;
-                var rawDataObjectStream = await _objectStore.RetrieveAsync(rawDataQueueMessage.Message);
+                Stream rawDataObjectStream = await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = rawDataQueueMessage.Message});
                 var objectName = _keyRegex.Match(rawDataObjectKey).Groups["objectName"].Value;
                 
                 using (var objectReader = new StreamReader(rawDataObjectStream))
@@ -47,8 +49,7 @@ namespace ServerlessMapReduceDotNet.Functions
                     {
                         using (var memoryStream = new MemoryStream())
                         {
-                            var ingestedObjectKey =
-                                $"{_config.IngestedFolder}/{objectName}-{Guid.NewGuid()}"; 
+                            var ingestedObjectKey = $"{_config.IngestedFolder}/{objectName}-{Guid.NewGuid()}"; 
 
                             using (var sw = new StreamWriter(memoryStream))
                             {
@@ -59,7 +60,11 @@ namespace ServerlessMapReduceDotNet.Functions
                                 }
 
                                 await sw.FlushAsync();
-                                await _objectStore.StoreAsync(ingestedObjectKey, memoryStream);
+                                await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+                                {
+                                    Key = ingestedObjectKey,
+                                    DataStream = memoryStream
+                                });
                             }
 
                             await _queueClient.Enqueue(_config.IngestedQueueName, ingestedObjectKey);

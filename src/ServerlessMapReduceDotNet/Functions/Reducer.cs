@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Queue;
 using ServerlessMapReduceDotNet.Reducers;
@@ -16,16 +18,16 @@ namespace ServerlessMapReduceDotNet.Functions
         private readonly Regex _keyRegex = new Regex(@".*/(?<objectName>.*?)$", RegexOptions.Compiled);
         
         private readonly IQueueClient _queueClient;
-        private readonly IObjectStore _objectStore;
         private readonly IConfig _config;
         private readonly IWorkerRecordStoreService _workerRecordStoreService;
+        private readonly ICommandDispatcher _commandDispatcher;
 
-        public Reducer(IQueueClient queueClient, IObjectStore objectStore, IConfig config, IWorkerRecordStoreService workerRecordStoreService)
+        public Reducer(IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService, ICommandDispatcher commandDispatcher)
         {
             _queueClient = queueClient;
-            _objectStore = objectStore;
             _config = config;
             _workerRecordStoreService = workerRecordStoreService;
+            _commandDispatcher = commandDispatcher;
         }
 
         public async Task InvokeAsync()
@@ -55,7 +57,7 @@ namespace ServerlessMapReduceDotNet.Functions
 
                 foreach (var queueMessage in queueMessages)
                 {
-                    var mappedObjectStream = await _objectStore.RetrieveAsync(queueMessage.Message);
+                    Stream mappedObjectStream = await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = queueMessage.Message});
                     using (var streamReader = new StreamReader(mappedObjectStream))
                     {
                         while (!streamReader.EndOfStream)
@@ -94,7 +96,11 @@ namespace ServerlessMapReduceDotNet.Functions
                 // Without this being in a transaction, there is the risk of incorrect results
                 MarkProcessed(_config.MappedQueueName, mappedQueueMessages);
                 MarkProcessed(_config.ReducedQueueName, reducedQueueMessages);
-                await _objectStore.StoreAsync(reducedOutputKey, reducedDataMemoryStream);
+                await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+                {
+                    Key = reducedOutputKey,
+                    DataStream = reducedDataMemoryStream
+                });
                 await _queueClient.Enqueue(_config.ReducedQueueName, reducedOutputKey);
                 await _workerRecordStoreService.RecordHasTerminated("reducer", instanceWorkerId);
                 // Transaction end

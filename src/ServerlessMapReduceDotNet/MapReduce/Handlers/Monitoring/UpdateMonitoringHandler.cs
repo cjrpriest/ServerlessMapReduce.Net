@@ -6,22 +6,23 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
 {
     public class UpdateMonitoringHandler : ICommandHandler<UpdateMonitoringCommand>
     {
-        private readonly IObjectStore _objectStore;
         private readonly IQueueClient _queueClient;
         private readonly IConfig _config;
         private readonly IWorkerRecordStoreService _workerRecordStoreService;
+        private readonly ICommandDispatcher _commandDispatcher;
 
-        public UpdateMonitoringHandler(IObjectStore objectStore, IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService)
+        public UpdateMonitoringHandler(IQueueClient queueClient, IConfig config, IWorkerRecordStoreService workerRecordStoreService, ICommandDispatcher commandDispatcher)
         {
-            _objectStore = objectStore;
             _queueClient = queueClient;
             _config = config;
             _workerRecordStoreService = workerRecordStoreService;
+            _commandDispatcher = commandDispatcher;
         }
         
         public async Task ExecuteAsync(UpdateMonitoringCommand command)
@@ -57,7 +58,11 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
 
             using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(html)))
             {
-                await _objectStore.StoreAsync($"{_config.MonitoringFolder}/index.html", memoryStream);
+                await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+                {
+                    Key = $"{_config.MonitoringFolder}/index.html",
+                    DataStream = memoryStream
+                });
             }
         }
 

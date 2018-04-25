@@ -3,17 +3,15 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Handlers;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
-using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 {
     public class IntegrationTestHostingEnvironment : HostingEnvironment
     {
-        public override IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<MemoryObjectStore>();
-
         public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
 
         public override IConfig ConfigFactory() => new IntegrationTestConfig();
@@ -31,5 +29,7 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
             commandRegistry.Register<IsTerminatedCommandHandler>();
             return this;
         }
+
+        protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
     }
 }

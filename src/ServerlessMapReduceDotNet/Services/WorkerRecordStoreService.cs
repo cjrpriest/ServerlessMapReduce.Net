@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ObjectStore;
 
@@ -18,21 +20,26 @@ namespace ServerlessMapReduceDotNet.Services
         // /workerRecords/<workerType>/<workerId>/<propertyName>/<PropertyValue>
         private readonly Regex _workerRecordObjectKeyRegex = new Regex(@".*?/(?<WorkerType>.*?)/(?<WorkerId>.*?)/(?<PropertyName>.*?)/(?<PropertyValue>.*?)$", RegexOptions.Compiled);
         
-        private readonly IObjectStore _objectStore;
         private readonly ITime _time;
         private readonly IConfig _config;
+        private readonly ICommandDispatcher _commandDispatcher;
 
-        public WorkerRecordStoreService(IObjectStore objectStore, ITime time, IConfig config)
+        public WorkerRecordStoreService(ITime time, IConfig config, ICommandDispatcher commandDispatcher)
         {
-            _objectStore = objectStore;
             _time = time;
             _config = config;
+            _commandDispatcher = commandDispatcher;
         }
 
         public async Task<IReadOnlyCollection<WorkerRecord>> GetAllWorkerRecords()
         {
             var workerRecordsToReturn = new List<WorkerRecord>();
-            var objectList = await _objectStore.ListKeysPrefixedAsync($"{_config.WorkerRecordFolder}/");
+            IReadOnlyCollection<ListedObject> objectList =
+                (await _commandDispatcher.DispatchAsync(new ListObjectKeysCommand
+                {
+                    Prefix = $"{_config.WorkerRecordFolder}/"
+                })).Result;
+            
             var workerProperties = objectList.SelectMany(GetWorkerRecordPropertyData);
 
             var typeIdNameGroups = workerProperties.GroupBy(x => $"{x.WorkerType}-{x.WorkerId}-{x.PropertyName}");
@@ -137,21 +144,33 @@ namespace ServerlessMapReduceDotNet.Services
             var timeValue = GetLastPingTimeValue(_time.UtcNow);
             var objectKey =
                 $"{_config.WorkerRecordFolder}/{workerType}/{workerId}/{LastPingTimePropertyName}/{timeValue}";
-            await _objectStore.StoreAsync(objectKey, StreamHelper.NewEmptyStream());
+            await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+            {
+                Key = objectKey,
+                DataStream = StreamHelper.NewEmptyStream()
+            });
         }
 
         public async Task RecordShouldStop(string workerType, string workerId)
         {
             var objectKey =
                 $"{_config.WorkerRecordFolder}/{workerType}/{workerId}/{ShouldRunPropertyName}/False";
-            await _objectStore.StoreAsync(objectKey, StreamHelper.NewEmptyStream());
+            await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+            {
+                Key = objectKey,
+                DataStream = StreamHelper.NewEmptyStream()
+            });
         }
 
         public async Task RecordHasTerminated(string workerType, string workerId)
         {
             var objectKey =
                 $"{_config.WorkerRecordFolder}/{workerType}/{workerId}/{HasTerminatedPropertyName}/True";
-            await _objectStore.StoreAsync(objectKey, StreamHelper.NewEmptyStream());
+            await _commandDispatcher.DispatchAsync(new StoreObjectCommand
+            {
+                Key = objectKey,
+                DataStream = StreamHelper.NewEmptyStream()
+            });
         }
 
         private string GetLastPingTimeValue(DateTime timeUtcNow)

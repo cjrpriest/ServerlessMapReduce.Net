@@ -5,13 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Functions;
-using ServerlessMapReduceDotNet.Handlers;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.LambdaEntryPoints;
 using ServerlessMapReduceDotNet.Mappers;
 using ServerlessMapReduceDotNet.MapReduce.Handlers;
 using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
-using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Queue.AmazonSqs;
@@ -28,7 +26,6 @@ namespace ServerlessMapReduceDotNet
 
             var serviceCollection = new ServiceCollection()
                 
-                .AddTransient<MemoryObjectStore>()
                 .AddTransient<FileSystemObjectStore>()
                 .AddTransient<IFileObjectStoreConfig, LocalConfig>() //don't like this
                 .AddTransient<AmazonS3ObjectStore>()
@@ -47,6 +44,8 @@ namespace ServerlessMapReduceDotNet
                 
                 .AddTransient<ICommandExecuter, AwsLambdaCommandExecuter>()
                 .AddTransient<ICommandDispatcher, AwsLambdaCommandDispatcher>()
+                
+                .AddSingleton<IMemoryObjectStoreData, MemoryObjectStoreData>()
 
                 .RegisterHostingEnvironment(hostingEnvironment);
 
@@ -66,6 +65,7 @@ namespace ServerlessMapReduceDotNet
                 .RegisterFireAndForgetFunction<Reducer, ReducerCommand>()
                 .RegisterFireAndForgetFunction<FinalReducer, FinalReducerCommand>()
                 .RegisterFireAndForgetFunction<WorkerManager, WorkerManagerCommand>()
+                .RegisterObjectStore()
                 .RegisterMiscHandlers();
             
             serviceProvider = serviceCollection.BuildServiceProvider();

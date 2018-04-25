@@ -1,10 +1,13 @@
 ﻿using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Functions;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
+using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests
 {
@@ -21,17 +24,17 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.ReducedQueueName, 1)
                 .Build();
 
-            var objectStoreMock = Substitute.For<IObjectStore>();
-            objectStoreMock.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream());
 
-            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStoreMock);
+            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await reducer.InvokeAsync();
 
             // Assert
-            await objectStoreMock.DidNotReceiveWithAnyArgs().RetrieveAsync(null);
+            await commandDispatcher.DidNotReceiveWithAnyArgs().DispatchAsync(null);
         }
         
         [Test]
@@ -45,17 +48,17 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.ReducedQueueName, 0)
                 .Build();
 
-            var objectStoreMock = Substitute.For<IObjectStore>();
-            objectStoreMock.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream);
 
-            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStoreMock);
+            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await reducer.InvokeAsync();
 
             // Assert
-            await objectStoreMock.DidNotReceiveWithAnyArgs().RetrieveAsync(null);
+            await commandDispatcher.DidNotReceiveWithAnyArgs().DispatchAsync(null);
         }
         
         [Test]
@@ -69,11 +72,11 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithRandomMessages(config.ReducedQueueName, 1)
                 .Build();
 
-            var objectStore = Substitute.For<IObjectStore>();
-            objectStore.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream);
 
-            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStore);
+            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await reducer.InvokeAsync();
@@ -93,56 +96,63 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
                 .WithMessage(config.MappedQueueName, $"{config.MappedFolder}/mappedobject1")
                 .Build();
 
-            var objectStoreMock = Substitute.For<IObjectStore>();
-            objectStoreMock.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream);
 
-            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStoreMock);
+            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, commandDispatcher: commandDispatcher);
 
             // Act
             await reducer.InvokeAsync();
 
             // Assert
-            await objectStoreMock.Received().RetrieveAsync($"{config.MappedFolder}/mappedobject1");
+            await commandDispatcher.Received()
+                .DispatchAsync(Arg.Is<RetrieveObjectCommand>(x =>
+                    x.Key == $"{config.MappedFolder}/mappedobject1"));
         }
-        
+
         [Test]
         public async Task Given_messages_on_reduced_queue__When_reducer_is_invoked__Then_reduced_objects_are_retrieved()
         {
             // Arrange
             var config = new ConfigBuiler().Build();
-            
+
             var queueClientMock = new QueueClientMockBuilder()
                 .WithMessage(config.ReducedQueueName, $"{config.ReducedFolder}/reducedobject1")
                 .WithMessage(config.ReducedQueueName, $"{config.ReducedFolder}/reducedobject2")
                 .Build();
 
-            var objectStoreMock = Substitute.For<IObjectStore>();
-            objectStoreMock.RetrieveAsync(Arg.Any<string>())
-                .Returns(ci => StreamHelper.NewEmptyStream());
+            var commandDispatcher = Substitute.For<ICommandDispatcher>();
+            commandDispatcher.DispatchAsync(Arg.Any<RetrieveObjectCommand>())
+                .ReturnsCommandResult(StreamHelper.NewEmptyStream);
 
-            var reducer = ReducerFactory(config: config, queueClient: queueClientMock, objectStore: objectStoreMock);
+            var reducer = ReducerFactory(config: config, queueClient: queueClientMock,
+                commandDispatcher: commandDispatcher);
 
             // Act
             await reducer.InvokeAsync();
 
             // Assert
-            await objectStoreMock.Received().RetrieveAsync($"{config.ReducedFolder}/reducedobject1");
-            await objectStoreMock.Received().RetrieveAsync($"{config.ReducedFolder}/reducedobject2");
+            await commandDispatcher.Received()
+                .DispatchAsync(Arg.Is<RetrieveObjectCommand>(x =>
+                    x.Key == $"{config.ReducedFolder}/reducedobject1"));
+            await commandDispatcher.Received()
+                .DispatchAsync(Arg.Is<RetrieveObjectCommand>(x =>
+                    x.Key == $"{config.ReducedFolder}/reducedobject2"));
         }
 
         private Reducer ReducerFactory(
             IQueueClient queueClient = null,
-            IObjectStore objectStore = null,
             IConfig config = null,
-            IWorkerRecordStoreService workerRecordStoreService = null)
+            IWorkerRecordStoreService workerRecordStoreService = null,
+            ICommandDispatcher commandDispatcher = null)
         {
             queueClient = CheckParam(queueClient);
-            objectStore = CheckParam(objectStore);
             config = CheckParam(config);
             workerRecordStoreService = CheckParam(workerRecordStoreService);
+            commandDispatcher = CheckParam(commandDispatcher);
 
-            var redcuer = new Reducer(queueClient, objectStore, config, workerRecordStoreService);
+            var redcuer = new Reducer(queueClient, config, workerRecordStoreService, commandDispatcher);
 
             return redcuer;
         }

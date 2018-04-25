@@ -10,8 +10,6 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         public ICommandRegistry CommandRegistry { protected get; set; }
         public IServiceCollection ServiceCollection { private get; set; }
         
-        public abstract IObjectStore ObjectStoreFactory(IServiceProvider serviceProvider);
-
         public abstract IQueueClient QueueClientFactory(IServiceProvider serviceProvider);
 
         public abstract IConfig ConfigFactory();
@@ -39,6 +37,14 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         {
             return this;
         }
+
+        public HostingEnvironment RegisterObjectStore()
+        {
+            RegisterObjectStoreImpl(CommandRegistry);
+            return this;
+        }
+
+        protected abstract void RegisterObjectStoreImpl(ICommandRegistry cr);
     }
 
     public static class CommandRegistryExtensions
@@ -54,7 +60,6 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         {
             hostingEnvironment.ServiceCollection = serviceCollection;
 
-            serviceCollection.AddSingleton(hostingEnvironment.ObjectStoreFactory);
             serviceCollection.AddSingleton(hostingEnvironment.QueueClientFactory);
             serviceCollection.AddSingleton(x => hostingEnvironment.ConfigFactory());
             

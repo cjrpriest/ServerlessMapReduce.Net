@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
+using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests
@@ -225,18 +228,17 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
             // Arrange
             var config = new ConfigBuiler().Build();
             var workerRecordFolder = config.WorkerRecordFolder;
+
+            var timeMock = Substitute.For<ITime>();
             
-            var objectStoreMock = Substitute.For<IObjectStore>();
-            objectStoreMock.ListKeysPrefixedAsync($"{workerRecordFolder}/").Returns(new List<ListedObject>
+            var commandDispatcher = Substitute.For<ICommandDispatcher>().RegisterMemoryObjectStore(timeMock);
+            await commandDispatcher.DispatchAsync(new StoreObjectCommand
             {
-                new ListedObject
-                {
-                    Key = workerRecordFolder,
-                    LastModified = DateTime.Parse("2018-02-25 20:45")
-                }
+                Key = workerRecordFolder,
+                DataStream = StreamHelper.NewEmptyStream()
             });
 
-            var store = WorkerRecordStoreServiceFactory(objectStoreMock: objectStoreMock, configMock: config);
+            var store = WorkerRecordStoreServiceFactory(commandDispatcherMock: commandDispatcher, configMock: config, timeMock: timeMock);
             
             // Act
             var workerRecords = await store.GetAllWorkerRecords();
@@ -248,19 +250,26 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
 
         private IWorkerRecordStoreService WorkerRecordStoreServiceFactory(
             ITime timeMock = null,
-            IObjectStore objectStoreMock = null,
-            IConfig configMock = null)
+            IConfig configMock = null,
+            ICommandDispatcher commandDispatcherMock = null)
         {
             if (timeMock == null)
                 timeMock = Substitute.For<ITime>();
             
-            if (objectStoreMock == null)
-                objectStoreMock = new MemoryObjectStore(timeMock);
-            
             if (configMock == null)
                 configMock = Substitute.For<IConfig>();
-            
-            return new WorkerRecordStoreService(objectStoreMock, timeMock, configMock);
+
+            if (commandDispatcherMock == null)
+            {
+                commandDispatcherMock = Substitute.For<ICommandDispatcher>()
+                    .RegisterMemoryObjectStore(timeMock);
+            }
+            return new WorkerRecordStoreService(timeMock, configMock, commandDispatcherMock);
+        }
+        
+        private T CheckParam<T>(T param) where T : class
+        {
+            return param ?? Substitute.For<T>();
         }
     }
 }
