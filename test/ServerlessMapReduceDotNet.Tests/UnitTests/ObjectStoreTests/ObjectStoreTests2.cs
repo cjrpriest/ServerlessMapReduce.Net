@@ -26,7 +26,6 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = inObjectStream, Key = "key"});
             
             // Act
-            //var outObjectStream = await objectStore.RetrieveAsync("key");
             var outObjectStream2 = await commandDispatcher.DispatchAsync(new RetrieveObjectCommand{ Key = "key" });
 
             // Assert
@@ -51,25 +50,18 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
         {
             // Arrange
             var timeMock = Substitute.For<ITime>();
-//            var objectStore = ObjectStoreFactory(timeMock);
             var commandDispatcher = CommandDispatcherFactory(timeMock);
 
-
             timeMock.UtcNow.Returns(DateTime.Parse("2018-02-16 12:00"));
-//            await objectStore.StoreAsync("folder1/folderA/key1", StreamHelper.NewEmptyStream());
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = StreamHelper.NewEmptyStream(), Key = "folder1/folderA/key1"});
             timeMock.UtcNow.Returns(DateTime.Parse("2018-02-16 12:01"));
-//            await objectStore.StoreAsync("folder1/folderA/key2", StreamHelper.NewEmptyStream());
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = StreamHelper.NewEmptyStream(), Key = "folder1/folderA/key2"});
             timeMock.UtcNow.Returns(DateTime.Parse("2018-02-16 12:02"));
-//            await objectStore.StoreAsync("folder2/folderB/key1", StreamHelper.NewEmptyStream());
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = StreamHelper.NewEmptyStream(), Key = "folder2/folderB/key1"});
             timeMock.UtcNow.Returns(DateTime.Parse("2018-02-16 12:03"));
-//            await objectStore.StoreAsync("folder2/folderB/key2", StreamHelper.NewEmptyStream());
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = StreamHelper.NewEmptyStream(), Key = "folder2/folderB/key2"});
 
             // Act
-//            var foundObjectKeys = await objectStore.ListKeysPrefixedAsync("folder2/");
             IReadOnlyCollection<ListedObject> foundObjectKeys = (await commandDispatcher.DispatchAsync(new ListObjectKeysCommand {Prefix = "folder2/"})).Result;
 
             // Assert
@@ -88,14 +80,11 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
             // Arrange
             var timeMock = Substitute.For<ITime>();
             var commandDispatcher = CommandDispatcherFactory(timeMock);
-//            var objectStore = ObjectStoreFactory(timeMock);
 
             timeMock.UtcNow.Returns(DateTime.Parse("2017-06-16 12:00"));
-//            await objectStore.StoreAsync("folder1/folderA/key1", StreamHelper.NewEmptyStream());
             await commandDispatcher.DispatchAsync(new StoreObjectCommand {DataStream = StreamHelper.NewEmptyStream(), Key = "folder1/folderA/key1"});
 
             // Act
-//            var foundObjectKeys = await objectStore.ListKeysPrefixedAsync("folder1/");
             IReadOnlyCollection<ListedObject> foundObjectKeys = (await commandDispatcher.DispatchAsync(new ListObjectKeysCommand {Prefix = "folder1/"})).Result;
 
             // Assert
