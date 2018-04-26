@@ -35,7 +35,7 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         
         public static ICommandDispatcher Register<TCommandHandler>(this ICommandDispatcher commandDispatcherMock, TCommandHandler commandHandler) where TCommandHandler : ICommandHandler
         {
-            var registerCommandHandlerExpression = new RegisterCommandHandlerExpressionBuilder2().Build<TCommandHandler>();
+            var registerCommandHandlerExpression = new RegisterCommandHandlerStubActionBuilder().Build<TCommandHandler>();
             registerCommandHandlerExpression(commandDispatcherMock, commandHandler);
             
             return commandDispatcherMock;

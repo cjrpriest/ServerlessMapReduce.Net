@@ -2,29 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
-using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Scripting;
 using NSubstitute;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
-    public class RegisterCommandHandlerExpressionBuilder2
+    public class RegisterCommandHandlerStubActionBuilder
     {
-        public const string DynamicAssemblyName = "ServerlessMapReduceDotNet.Tests.DynamicHelpers";
+        private const string DynamicAssemblyName = "ServerlessMapReduceDotNet.Tests.DynamicHelpers";
         
         private const int CommandHandlerCommandTypeGenericArgPosition = 0;
         private const int CommandHandlerResultTypeGenericArgPosition = 1;
                 
-        static RegisterCommandHandlerExpressionBuilder2()
+        static RegisterCommandHandlerStubActionBuilder()
         {
             var targetAssembly = typeof(ThisAssembly).Assembly;
             var targetAssemblyExportedTypes = targetAssembly.GetTypes();
@@ -158,11 +153,14 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         {
             var dynamicAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .First(x => x.GetName().Name == DynamicAssemblyName);
-            var registerItType = dynamicAssembly.GetType("RegisterCommandHandlerStub");
-            var register = Activator.CreateInstance(registerItType) as IRegisterCommandHandlerStub;
-            return (commandDispatcher, commandHandler) =>
+            var registerCommandHandlerStubType = dynamicAssembly.GetType("RegisterCommandHandlerStub");
+            
+            if (!(Activator.CreateInstance(registerCommandHandlerStubType) is IRegisterCommandHandlerStub registerCommandHandlerStub))
+                throw new ApplicationException("Instance of RegisterCommandHandlerStub cannot be cast to IRegisterCommandHandlerStub");
+            
+            return (commandDispatcherMock, commandHandler) =>
             {
-                register.Register(commandDispatcher, typeof(TCommandHandler), commandHandler);
+                registerCommandHandlerStub.Register(commandDispatcherMock, typeof(TCommandHandler), commandHandler);
             };
         }
 
@@ -179,27 +177,26 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         {
             if (type == typeof(int))
                 return "int";
-            else if (type == typeof(short))
+            if (type == typeof(short))
                 return "short";
-            else if (type == typeof(byte))
+            if (type == typeof(byte))
                 return "byte";
-            else if (type == typeof(bool))
+            if (type == typeof(bool))
                 return "bool";
-            else if (type == typeof(long))
+            if (type == typeof(long))
                 return "long";
-            else if (type == typeof(float))
+            if (type == typeof(float))
                 return "float";
-            else if (type == typeof(double))
+            if (type == typeof(double))
                 return "double";
-            else if (type == typeof(decimal))
+            if (type == typeof(decimal))
                 return "decimal";
-            else if (type == typeof(string))
+            if (type == typeof(string))
                 return "string";
-            else if (type.IsGenericType)
+            if (type.IsGenericType)
                 return $"{type.Namespace}.{type.Name}".Split('`')[0] + "<" +
                        string.Join(", ", type.GetGenericArguments().Select(GetFriendlyName).ToArray()) + ">";
-            else
-                return $"{type.Namespace}.{type.Name}";
+            return $"{type.Namespace}.{type.Name}";
         }
 
         private const string RegisterCommandHandlerStubClassTemplate = @"
@@ -262,14 +259,13 @@ class RegisterCommandHandlerStub : ServerlessMapReduceDotNet.Tests.Extensions.Co
 }
 ";
 
-        private const string RegisterCommandHandlerStubSwitchOptionTemplate = @"
-            case ""SafeCommandHandlerName"":
+        private const string RegisterCommandHandlerStubSwitchOptionTemplate = 
+@"            case ""SafeCommandHandlerName"":
                 Register_SafeCommandHandlerName(commandDispatcher, commandHandler);
-                break;
-";
+                break;";
 
-        private static string RegisterCommandHandlerStubMethodTemplate = @"
-    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
+        private static string RegisterCommandHandlerStubMethodTemplate =
+@"    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
     {
         var commandHandler = (TCommandHandler)commandHandlerObj;
 
@@ -282,7 +278,6 @@ class RegisterCommandHandlerStub : ServerlessMapReduceDotNet.Tests.Extensions.Co
                     false
                 )
             );
-    }
-";
+    }";
     }
 }
