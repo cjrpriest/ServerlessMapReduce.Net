@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using AzureFromTheTrenches.Commanding.Abstractions;
+﻿using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
-using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock

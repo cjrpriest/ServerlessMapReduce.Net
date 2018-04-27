@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
@@ -19,10 +20,10 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
             _tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         }
         
-        protected override IObjectStore ObjectStoreFactoryImpl(ITime time)
+        protected override void RegisterObjectStore(ICommandDispatcher commandDispatcher, ITime time)
         {
-            return new FileSystemObjectStore(new FileSystem(), new FileSystemObjectStoreTestConfig(_tempPath), time);
-        }
+            commandDispatcher.RegisterFileSystemObjectStore(time, new FileSystemObjectStoreTestConfig(_tempPath), new FileSystem());
+        } 
 
         [TearDown]
         public void TearDown()

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
@@ -7,7 +6,6 @@ using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;

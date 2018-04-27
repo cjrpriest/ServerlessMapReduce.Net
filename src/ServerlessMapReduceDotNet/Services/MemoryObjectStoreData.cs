@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ServerlessMapReduceDotNet.Abstractions;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.Services
 {
