@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
+using ServerlessMapReduceDotNet.Commands.ObjectStore;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 using Shouldly;
@@ -46,10 +50,11 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
                     "/root/objectStore/dir/.DS_Store",
                     "/root/objectStore/dir/foo2"
                 });
-            var fileSystemObjectStore = new FileSystemObjectStore(fileSytem, new FileSystemObjectStoreTestConfig("/root/objectStore/"), new Time());
-            
+            var fileSystemListObjectKeysCommandHandler = new FileSystemListObjectKeysCommandHandler(new FileSystemObjectStoreTestConfig("/root/objectStore/"),
+                fileSytem);
+
             // Act
-            var listedObjects = await fileSystemObjectStore.ListKeysPrefixedAsync("dir");
+            var listedObjects = await fileSystemListObjectKeysCommandHandler.ExecuteAsync(new ListObjectKeysCommand {Prefix = "dir"}, default(IReadOnlyCollection<ListedObject>));
 
             // Assert
             listedObjects.Count.ShouldBe(2);

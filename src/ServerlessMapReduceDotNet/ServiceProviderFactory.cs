@@ -26,7 +26,6 @@ namespace ServerlessMapReduceDotNet
 
             var serviceCollection = new ServiceCollection()
                 
-                .AddTransient<FileSystemObjectStore>()
                 .AddTransient<IFileObjectStoreConfig, LocalConfig>() //don't like this
                 .AddTransient<AmazonS3ObjectStore>()
                     .AddTransient<AmazonS3PermissionsProvider>()
