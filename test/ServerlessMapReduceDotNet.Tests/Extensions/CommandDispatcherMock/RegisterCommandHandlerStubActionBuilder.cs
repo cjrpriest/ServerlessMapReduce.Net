@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -30,7 +31,11 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             if (sourceCodeHash == hashOfCachedCode) return;
             
             WriteHash(sourceCodeHash);
+            var sw = new Stopwatch();
+            sw.Start();
             var assemblyIl = GenerateAssembly(sourceCode);
+            sw.Stop();
+            Console.WriteLine($"Generating assembly took {sw.ElapsedMilliseconds}ms");
             File.WriteAllBytes(GetDynamicAssemblyFileName(), assemblyIl);
         }
 
