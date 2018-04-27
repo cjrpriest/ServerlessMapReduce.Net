@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
 using AzureFromTheTrenches.Commanding.Abstractions;
@@ -110,18 +109,13 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                 if (result.Success)
                 {
                     return ms.ToArray();
-                    ms.Seek(0, SeekOrigin.Begin);
-                    AssemblyLoadContext.Default.LoadFromStream(ms);
                 }
-                else
-                {
-                    foreach (var resultDiagnostic in result.Diagnostics)
-                    {
-                        Console.WriteLine(resultDiagnostic);
-                    }
 
-                    return new byte[] { };
+                foreach (var resultDiagnostic in result.Diagnostics)
+                {
+                    Console.WriteLine(resultDiagnostic);
                 }
+                throw new ApplicationException("Unable to compile generated command handler stub code");
             }
         }
 
