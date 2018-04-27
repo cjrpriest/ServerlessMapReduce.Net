@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.Handlers;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.Queue.AmazonSqs;
 
@@ -23,9 +24,6 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
             return this;
         }
 
-        protected override void RegisterObjectStoreImpl(ICommandRegistry cr)
-        {
-            throw new NotImplementedException();
-        }
+        protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterAmazonS3ObjectStore();
     }
 }
