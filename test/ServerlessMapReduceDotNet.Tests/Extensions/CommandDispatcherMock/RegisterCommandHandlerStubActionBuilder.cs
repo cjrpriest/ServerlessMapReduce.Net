@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Security.Cryptography;
 using System.Text;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.CodeAnalysis;
@@ -21,16 +22,118 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                 
         static RegisterCommandHandlerStubActionBuilder()
         {
+            var sourceCode = GenerateSourceCode();
+
+            var sourceCodeHash = GetHash(sourceCode);
+            var hashOfCachedCode = GetCurrentHash();
+
+            if (sourceCodeHash == hashOfCachedCode) return;
+            
+            WriteHash(sourceCodeHash);
+            var assemblyIl = GenerateAssembly(sourceCode);
+            File.WriteAllBytes(GetDynamicAssemblyFileName(), assemblyIl);
+        }
+
+        private static string GetHashFileName()
+        {
+            return GetLocationNextToExecutingAssembly($"{DynamicAssemblyName}.dll.srcHash");
+
+        }
+        
+        private static string GetDynamicAssemblyFileName()
+        {
+            return GetLocationNextToExecutingAssembly($"{DynamicAssemblyName}.dll");
+        }
+
+        private static string GetLocationNextToExecutingAssembly(string fileName)
+        {
+            var currentAssemblyDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName;
+            return Path.Combine(currentAssemblyDirectory, fileName);
+        }
+
+        private static string GetCurrentHash()
+        {
+            try
+            {
+                return File.ReadAllText(GetHashFileName());
+            }
+            catch (Exception)
+            {
+                return String.Empty;
+            }
+        }
+
+        private static void WriteHash(string hash)
+        {
+            try
+            {
+                File.WriteAllText(GetHashFileName(), hash);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+        
+        private static string GetHash(string text)
+        {
+            var bytes = Encoding.UTF8.GetBytes(text);
+            var hashstring = new SHA256Managed();
+            var hash = hashstring.ComputeHash(bytes);
+            var hashString = new StringBuilder();
+            foreach (byte x in hash)
+            {
+                hashString.Append(String.Format("{0:x2}", x));
+            }
+            return hashString.ToString();
+        }
+
+        private static byte[] GenerateAssembly(string sourceCode)
+        {
+            var assemblyReferences = GetAssemblyReferences();
+
+            var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
+            var compilation = CSharpCompilation.Create(
+                DynamicAssemblyName,
+                new[] {syntaxTree},
+                assemblyReferences,
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            );
+            using (var ms = new MemoryStream())
+            {
+                var result = compilation.Emit(ms);
+                if (result.Success)
+                {
+                    return ms.ToArray();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    AssemblyLoadContext.Default.LoadFromStream(ms);
+                }
+                else
+                {
+                    foreach (var resultDiagnostic in result.Diagnostics)
+                    {
+                        Console.WriteLine(resultDiagnostic);
+                    }
+
+                    return new byte[] { };
+                }
+            }
+        }
+
+        private static string GenerateSourceCode()
+        {
             var targetAssembly = typeof(ThisAssembly).Assembly;
             var targetAssemblyExportedTypes = targetAssembly.GetTypes();
             var commandHandlerInterfaceType = typeof(ICommandHandler<>);
             var commandHandlerWithResultInterfaceType = typeof(ICommandHandler<,>);
-            var commandHandlerTypes = targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerInterfaceType));
-            var commandHandlerWithResultTypes = targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerWithResultInterfaceType));
+            var commandHandlerTypes =
+                targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerInterfaceType));
+            var commandHandlerWithResultTypes =
+                targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerWithResultInterfaceType));
 
             var switchOptionCodeChunks = new List<string>();
             var methodCodeChunks = new List<string>();
-            
+
             foreach (var commandHandlerWithResultType in commandHandlerWithResultTypes)
             {
                 var commandHandlerWithResultInterfaceTypeGenericArguments = commandHandlerWithResultType
@@ -51,13 +154,13 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                     .Replace("TCommandHandler", GetFriendlyName(commandHandlerWithResultType))
                     .Replace("TCommand", GetFriendlyName(commandType))
                     .Replace("TResult", GetFriendlyName(resultType))
-                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType)); 
-                
+                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType));
+
                 methodCodeChunks.Add(methodCode);
-                
+
                 var switchOptionCode = RegisterCommandHandlerStubSwitchOptionTemplate
                     .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerWithResultType));
-                
+
                 switchOptionCodeChunks.Add(switchOptionCode);
             }
 
@@ -73,37 +176,10 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                 methodsCode.AppendLine(method);
             }
 
-            var finalCode = RegisterCommandHandlerStubClassTemplate
+            var code = RegisterCommandHandlerStubClassTemplate
                 .Replace("##switch_options##", switchOptionsCode.ToString())
                 .Replace("##methods##", methodsCode.ToString());
-
-            Console.WriteLine(finalCode);
-
-            var assemblyReferences = GetAssemblyReferences();
-            
-            var syntaxTree = CSharpSyntaxTree.ParseText(finalCode);
-            var compilation = CSharpCompilation.Create(
-                DynamicAssemblyName, 
-                new [] { syntaxTree },
-                assemblyReferences,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            );
-            using (var ms = new MemoryStream())
-            {
-                var result = compilation.Emit(ms);
-                if (result.Success)
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    AssemblyLoadContext.Default.LoadFromStream(ms);
-                }
-                else
-                {
-                    foreach (var resultDiagnostic in result.Diagnostics)
-                    {
-                        Console.WriteLine(resultDiagnostic);
-                    }
-                }
-            }
+            return code;
         }
 
         private static PortableExecutableReference[] GetAssemblyReferences()
@@ -151,8 +227,7 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         
         public Action<ICommandDispatcher, TCommandHandler> Build<TCommandHandler>()
         {
-            var dynamicAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                .First(x => x.GetName().Name == DynamicAssemblyName);
+            var dynamicAssembly = Assembly.LoadFile(GetDynamicAssemblyFileName());
             var registerCommandHandlerStubType = dynamicAssembly.GetType("RegisterCommandHandlerStub");
             
             if (!(Activator.CreateInstance(registerCommandHandlerStubType) is IRegisterCommandHandlerStub registerCommandHandlerStub))
