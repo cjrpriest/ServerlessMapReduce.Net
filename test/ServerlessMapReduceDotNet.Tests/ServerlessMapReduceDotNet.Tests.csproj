@@ -19,9 +19,4 @@
   <ItemGroup>
     <EmbeddedResource Include="IntegrationTests\small-make-model-data-set.csv" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="AzureFromTheTrenches.Commanding.Abstractions, Version=7.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\AzureFromTheTrenches.Commanding\Source\AzureFromTheTrenches.Commanding.Abstractions\bin\Debug\netstandard2.0\AzureFromTheTrenches.Commanding.Abstractions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
