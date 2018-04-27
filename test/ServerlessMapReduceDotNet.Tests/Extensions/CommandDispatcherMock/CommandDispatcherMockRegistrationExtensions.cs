@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using AzureFromTheTrenches.Commanding.Abstractions.Model;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using NSubstitute;
 using NSubstitute.Core;
-using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
@@ -22,11 +18,10 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         {
             commandDispatcherMock
                 .DispatchAsync(Arg.Any<TCommand>())
-                .Returns(ci => 
+                .Returns(async ci => 
                 {
-                    commandHandlerFactory()
-                        .ExecuteAsync(ci.Arg<TCommand>())
-                        .Wait();
+                    await commandHandlerFactory()
+                        .ExecuteAsync(ci.Arg<TCommand>());
                     return new CommandResult(false);
                 });
             
