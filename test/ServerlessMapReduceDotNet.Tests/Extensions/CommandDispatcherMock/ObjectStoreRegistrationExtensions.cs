@@ -1,12 +1,26 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
-    public static class FileSystemObjectStoreRegistrationExtensions
+    internal static class ObjectStoreRegistrationExtensions
     {
+        public static ICommandDispatcher RegisterMemoryObjectStore(this ICommandDispatcher commandDispatcherMock, ITime timeMock)
+        {
+            var memoryObjectStoreData = new MemoryObjectStoreData();
+
+            commandDispatcherMock
+                .Register(new MemoryListObjectKeysCommandHandler(memoryObjectStoreData))
+                .Register(new MemoryRetrieveObjectCommandHandler(memoryObjectStoreData))
+                .Register<StoreObjectCommand, MemoryStoreObjectCommandHandler>(() => new MemoryStoreObjectCommandHandler(timeMock, memoryObjectStoreData));
+
+            return commandDispatcherMock;
+        }
+        
         public static ICommandDispatcher RegisterFileSystemObjectStore(this ICommandDispatcher commandDispatcherMock, ITime timeMock, IFileObjectStoreConfig config, IFileSystem fileSystem)
         {
             commandDispatcherMock
