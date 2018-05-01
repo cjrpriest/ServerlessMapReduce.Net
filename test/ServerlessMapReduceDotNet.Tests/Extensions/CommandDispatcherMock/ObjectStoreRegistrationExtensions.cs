@@ -1,5 +1,4 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
@@ -16,7 +15,7 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             commandDispatcherMock
                 .Register(new MemoryListObjectKeysCommandHandler(memoryObjectStoreData))
                 .Register(new MemoryRetrieveObjectCommandHandler(memoryObjectStoreData))
-                .Register<StoreObjectCommand, MemoryStoreObjectCommandHandler>(() => new MemoryStoreObjectCommandHandler(timeMock, memoryObjectStoreData));
+                .Register(new MemoryStoreObjectCommandHandler(timeMock, memoryObjectStoreData));
 
             return commandDispatcherMock;
         }
@@ -26,7 +25,7 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             commandDispatcherMock
                 .Register(new FileSystemListObjectKeysCommandHandler(config, fileSystem))
                 .Register(new FileSystemRetrieveObjectCommandHandler(config))
-                .Register<StoreObjectCommand, FileSystemStoreObjectCommandHandler>(() => new FileSystemStoreObjectCommandHandler(config, timeMock));
+                .Register(new FileSystemStoreObjectCommandHandler(config, timeMock));
 
             return commandDispatcherMock;
         }

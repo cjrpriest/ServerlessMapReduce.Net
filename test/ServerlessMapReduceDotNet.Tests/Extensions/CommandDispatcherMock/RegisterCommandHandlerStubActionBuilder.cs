@@ -24,6 +24,8 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         {
             var sourceCode = GenerateSourceCode();
 
+            Console.WriteLine(sourceCode);
+            
             var sourceCodeHash = GetHash(sourceCode);
             var hashOfCachedCode = GetCurrentHash();
 
@@ -125,14 +127,45 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
             var targetAssemblyExportedTypes = targetAssembly.GetTypes();
             var commandHandlerInterfaceType = typeof(ICommandHandler<>);
             var commandHandlerWithResultInterfaceType = typeof(ICommandHandler<,>);
+            
             var commandHandlerTypes =
-                targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerInterfaceType));
+                targetAssemblyExportedTypes
+                    .Where(x => 
+                        IsAssignableToGenericType(x, commandHandlerInterfaceType)
+                        && !x.IsGenericType);
+            
             var commandHandlerWithResultTypes =
-                targetAssemblyExportedTypes.Where(x => IsAssignableToGenericType(x, commandHandlerWithResultInterfaceType));
+                targetAssemblyExportedTypes
+                    .Where(x => 
+                        IsAssignableToGenericType(x, commandHandlerWithResultInterfaceType)
+                        && !x.IsGenericType);
 
             var switchOptionCodeChunks = new List<string>();
             var methodCodeChunks = new List<string>();
 
+            foreach (var commandHandlerType in commandHandlerTypes)
+            {
+                var commandHandlerInterfaceTypeGenericArguments = commandHandlerType
+                    .GetInterfaces()
+                    .First(t => typeof(ICommandHandler).IsAssignableFrom(t) && t.IsGenericType)
+                    .GetGenericArguments();
+                
+                var commandType =
+                    commandHandlerInterfaceTypeGenericArguments[CommandHandlerCommandTypeGenericArgPosition];
+                
+                var methodCode = RegisterCommandHandlerStubMethodTemplate
+                    .Replace("TCommandHandler", GetFriendlyName(commandHandlerType))
+                    .Replace("TCommand", GetFriendlyName(commandType))
+                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerType));
+                
+                methodCodeChunks.Add(methodCode);
+
+                var switchOptionCode = RegisterCommandHandlerStubSwitchOptionTemplate
+                    .Replace("SafeCommandHandlerName", GetSafeFriendlyName(commandHandlerType));
+
+                switchOptionCodeChunks.Add(switchOptionCode);
+            }
+            
             foreach (var commandHandlerWithResultType in commandHandlerWithResultTypes)
             {
                 var commandHandlerWithResultInterfaceTypeGenericArguments = commandHandlerWithResultType
@@ -140,16 +173,12 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
                     .First(t => typeof(ICommandHandler).IsAssignableFrom(t) && t.IsGenericType)
                     .GetGenericArguments();
 
-                var commandHandlerHasResult = commandHandlerWithResultInterfaceTypeGenericArguments.Length == 2;
-
                 var commandType =
                     commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerCommandTypeGenericArgPosition];
-                var resultType = commandHandlerHasResult
-                    ? commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerResultTypeGenericArgPosition]
-                    : null;
+                var resultType = commandHandlerWithResultInterfaceTypeGenericArguments[CommandHandlerResultTypeGenericArgPosition];
 
                 // TODO need to improve this to avoid clashes -- e.g. handlebars
-                var methodCode = RegisterCommandHandlerStubMethodTemplate
+                var methodCode = RegisterCommandHandlerWithResultStubMethodTemplate
                     .Replace("TCommandHandler", GetFriendlyName(commandHandlerWithResultType))
                     .Replace("TCommand", GetFriendlyName(commandType))
                     .Replace("TResult", GetFriendlyName(resultType))
@@ -338,7 +367,7 @@ class RegisterCommandHandlerStub : ServerlessMapReduceDotNet.Tests.Extensions.Co
                 Register_SafeCommandHandlerName(commandDispatcher, commandHandler);
                 break;";
 
-        private static string RegisterCommandHandlerStubMethodTemplate =
+        private static string RegisterCommandHandlerWithResultStubMethodTemplate =
 @"    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
     {
         var commandHandler = (TCommandHandler)commandHandlerObj;
@@ -352,6 +381,21 @@ class RegisterCommandHandlerStub : ServerlessMapReduceDotNet.Tests.Extensions.Co
                     false
                 )
             );
+    }";
+        
+        private static string RegisterCommandHandlerStubMethodTemplate =
+@"    private void Register_SafeCommandHandlerName(ICommandDispatcher commandDispatcher, object commandHandlerObj)
+    {
+        var commandHandler = (TCommandHandler)commandHandlerObj;
+
+        commandDispatcher
+            .DispatchAsync(Arg.Any<TCommand>())
+            .Returns(async ci => 
+            {
+                await commandHandler
+                    .ExecuteAsync(ci.Arg<TCommand>());
+                return new CommandResult(false);
+            });
     }";
     }
 }

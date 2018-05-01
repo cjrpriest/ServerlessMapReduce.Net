@@ -8,26 +8,7 @@ using NSubstitute.Core;
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
     public static class CommandDispatcherMockRegistrationExtensions {
-        public static ICommandDispatcher Register<
-            TCommand,
-            TCommandHandler
-        >(this ICommandDispatcher commandDispatcherMock,
-            Func<TCommandHandler> commandHandlerFactory)
-            where TCommand : ICommand
-            where TCommandHandler : ICommandHandler<TCommand>
-        {
-            commandDispatcherMock
-                .DispatchAsync(Arg.Any<TCommand>())
-                .Returns(async ci => 
-                {
-                    await commandHandlerFactory()
-                        .ExecuteAsync(ci.Arg<TCommand>());
-                    return new CommandResult(false);
-                });
-            
-            return commandDispatcherMock;
-        }
-        
+
         public static ICommandDispatcher Register<TCommandHandler>(this ICommandDispatcher commandDispatcherMock, TCommandHandler commandHandler) where TCommandHandler : ICommandHandler
         {
             var registerCommandHandlerExpression = new RegisterCommandHandlerStubActionBuilder().Build<TCommandHandler>();
