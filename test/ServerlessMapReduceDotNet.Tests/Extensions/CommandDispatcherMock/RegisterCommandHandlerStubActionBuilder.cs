@@ -24,8 +24,6 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
         {
             var sourceCode = GenerateSourceCode();
 
-            Console.WriteLine(sourceCode);
-            
             var sourceCodeHash = GetHash(sourceCode);
             var hashOfCachedCode = GetCurrentHash();
 
