@@ -24,12 +24,6 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
             return this;
         }
 
-        protected override HostingEnvironment RegisterMiscHandlersImpl(ICommandRegistry commandRegistry)
-        {
-            commandRegistry.Register<IsTerminatedCommandHandler>();
-            return this;
-        }
-
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
     }
 }

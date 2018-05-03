@@ -24,6 +24,6 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
             return this;
         }
 
-        protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
+        protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterFileSystemObjectStore();
     }
 }

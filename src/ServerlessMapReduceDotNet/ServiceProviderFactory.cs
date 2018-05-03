@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Functions;
+using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.LambdaEntryPoints;
 using ServerlessMapReduceDotNet.Mappers;
@@ -53,6 +54,7 @@ namespace ServerlessMapReduceDotNet
                     type => serviceProvider.GetService(type)
                 )
                 .UseCommanding()
+                .Register<IsTerminatedCommandHandler>()
                 .Register<UpdateMonitoringHandler>()
                 .Register<MapperFuncHandler>()
                 .RegisterHostingEnvironment(hostingEnvironment);

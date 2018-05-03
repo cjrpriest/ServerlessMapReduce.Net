@@ -53,7 +53,7 @@ namespace ServerlessMapReduceDotNet.Functions
 
                     foreach (var keyValuePair in keyValuePairs)
                     {
-                        var linesToWrite = new MakeAccidentCountFinalReduce().FinalReduce(keyValuePair);
+                        var linesToWrite = new MostAccidentProneFinalReduce().FinalReduce(keyValuePair);
                         foreach (var lineToWrite in linesToWrite)
                             await streamWriter.WriteLineAsync(lineToWrite);
                     }

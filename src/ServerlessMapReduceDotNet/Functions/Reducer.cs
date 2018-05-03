@@ -84,7 +84,7 @@ namespace ServerlessMapReduceDotNet.Functions
                     }
                 }
 
-                var reducedCounts = new MakeAccidentCountReducer().Reduce(inputCounts);
+                var reducedCounts = new MostAccidentProneReducer().Reduce(inputCounts);
                 
                 var reducedCountsJson = JsonConvert.SerializeObject(reducedCounts, Formatting.None,
                     new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
