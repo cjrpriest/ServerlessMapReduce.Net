@@ -29,7 +29,8 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
             var commandHandlerType = _functionHandlerType.MakeGenericType(typeof(TFunction), typeof(TCommand));
 
             _commandRegistry.Register(commandHandlerType);
-            _commandRegistry.Register<TCommand>(() => _customCommandDispatcher);
+            if (_customCommandDispatcher != null)
+                _commandRegistry.Register<TCommand>(() => _customCommandDispatcher);
             return this;
         }
     }
