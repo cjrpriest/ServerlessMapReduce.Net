@@ -7,63 +7,29 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public abstract class HostingEnvironment
     {
-        public ICommandRegistry CommandRegistry { protected get; set; }
-        public IServiceCollection ServiceCollection { private get; set; }
-        
-        public abstract IQueueClient QueueClientFactory(IServiceProvider serviceProvider);
-
         public abstract IConfig ConfigFactory();
 
-        public abstract Type TerminatorHandlerTypeFactory();
+        protected abstract IQueueClient QueueClientFactory(IServiceProvider serviceProvider);
 
-        public HostingEnvironment RegisterFireAndForgetFunction<TFunction, TCommand>()
-            where TFunction : class, IFireAndForgetFunction 
-            where TCommand : ICommand
-        {
-            ServiceCollection.AddTransient<TFunction>();
-            return RegisterFireAndForgetFunctionImpl<TFunction, TCommand>();
-        }
-        
-        protected abstract HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
-            where TFunction : IFireAndForgetFunction
-            where TCommand : ICommand;
+        protected abstract Type TerminatorHandlerTypeFactory();
 
-        public HostingEnvironment RegisterMiscHandlers()
-        {
-            return RegisterMiscHandlersImpl(CommandRegistry);
-        }
+        protected abstract Type FireAndForgetHandlerType();
 
-        protected virtual HostingEnvironment RegisterMiscHandlersImpl(ICommandRegistry commandRegistry)
-        {
-            return this;
-        }
+        protected virtual ICommandDispatcher CustomCommandDispatcherFactory() => null;
 
-        public HostingEnvironment RegisterObjectStore()
-        {
-            RegisterObjectStoreImpl(CommandRegistry);
-            return this;
-        }
+        protected virtual void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry) { }
 
         protected abstract void RegisterObjectStoreImpl(ICommandRegistry cr);
-    }
 
-    public static class CommandRegistryExtensions
-    {
-        public static ICommandRegistry RegisterHostingEnvironment(this ICommandRegistry commandRegistry, HostingEnvironment hostingEnvironment)
+        public void RegisterHostingEnvironment(ICommandRegistry commandRegistry, IServiceCollection serviceCollection, Action<IRegisterFireAndForgetHandler> registerFireAndForgetHandlers)
         {
-            hostingEnvironment.CommandRegistry = commandRegistry;
-            commandRegistry.Register(hostingEnvironment.TerminatorHandlerTypeFactory());
-            return commandRegistry;
-        }
-        
-        public static IServiceCollection RegisterHostingEnvironment(this IServiceCollection serviceCollection, HostingEnvironment hostingEnvironment)
-        {
-            hostingEnvironment.ServiceCollection = serviceCollection;
-
-            serviceCollection.AddSingleton(hostingEnvironment.QueueClientFactory);
-            serviceCollection.AddSingleton(x => hostingEnvironment.ConfigFactory());
+            commandRegistry.Register(TerminatorHandlerTypeFactory());
+            RegisterMiscHandlersImpl(commandRegistry);
+            RegisterObjectStoreImpl(commandRegistry);
+            registerFireAndForgetHandlers(new RegisterFireAndForgetHandler(commandRegistry, serviceCollection, FireAndForgetHandlerType(), CustomCommandDispatcherFactory()));
             
-            return serviceCollection;
+            serviceCollection.AddSingleton(QueueClientFactory);
+            serviceCollection.AddSingleton(x => ConfigFactory());
         }
     }
 }

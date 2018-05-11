@@ -26,29 +26,27 @@ namespace ServerlessMapReduceDotNet
             IServiceProvider serviceProvider = null;
 
             var serviceCollection = new ServiceCollection()
-                
+
                 .AddTransient<IFileObjectStoreConfig, LocalConfig>() //don't like this
                 .AddTransient<AmazonS3PermissionsProvider>()
-                
+
                 .AddTransient<InMemoryQueueClient>()
                 .AddTransient<AmazonSqsQueueClient>()
-                
+
                 .AddTransient<ITime, Time>()
                 .AddTransient<IFileSystem, FileSystem>()
 
                 .AddTransient<IWorkerRecordStoreService, WorkerRecordStoreService>()
-                
+
                 .AddTransient<MakeAccidentCountMapper>()
                 .AddTransient<MostAccidentProneMapper>()
-                
+
                 .AddTransient<ICommandExecuter, AwsLambdaCommandExecuter>()
                 .AddTransient<ICommandDispatcher, AwsLambdaCommandDispatcher>()
-                
-                .AddSingleton<IMemoryObjectStoreData, MemoryObjectStoreData>()
 
-                .RegisterHostingEnvironment(hostingEnvironment);
+                .AddSingleton<IMemoryObjectStoreData, MemoryObjectStoreData>();
 
-            new CommandingDependencyResolver(
+            var commandRegistry = new CommandingDependencyResolver(
                     (type, instance) => serviceCollection.AddSingleton(type, instance),
                     (type, impl) => serviceCollection.AddTransient(type, impl),
                     type => serviceProvider.GetService(type)
@@ -56,17 +54,18 @@ namespace ServerlessMapReduceDotNet
                 .UseCommanding()
                 .Register<IsTerminatedCommandHandler>()
                 .Register<UpdateMonitoringHandler>()
-                .Register<MapperFuncHandler>()
-                .RegisterHostingEnvironment(hostingEnvironment);
+                .Register<MapperFuncHandler>();
 
             hostingEnvironment
-                .RegisterFireAndForgetFunction<Ingester, IngestCommand>()
-                .RegisterFireAndForgetFunction<Mapper, MapperCommand>()
-                .RegisterFireAndForgetFunction<Reducer, ReducerCommand>()
-                .RegisterFireAndForgetFunction<FinalReducer, FinalReducerCommand>()
-                .RegisterFireAndForgetFunction<WorkerManager, WorkerManagerCommand>()
-                .RegisterObjectStore()
-                .RegisterMiscHandlers();
+                .RegisterHostingEnvironment(commandRegistry, serviceCollection, x =>
+                {
+                    x
+                        .RegisterFireAndForgetFunctionImpl<Ingester, IngestCommand>()
+                        .RegisterFireAndForgetFunctionImpl<Mapper, MapperCommand>()
+                        .RegisterFireAndForgetFunctionImpl<Reducer, ReducerCommand>()
+                        .RegisterFireAndForgetFunctionImpl<FinalReducer, FinalReducerCommand>()
+                        .RegisterFireAndForgetFunctionImpl<WorkerManager, WorkerManagerCommand>();
+                });
             
             serviceProvider = serviceCollection.BuildServiceProvider();
 

@@ -12,17 +12,20 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public class AwsLambdaHostingEnvironment : HostingEnvironment
     {
-        public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonSqsQueueClient>();
+        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonSqsQueueClient>();
 
         public override IConfig ConfigFactory() => new Config();
 
-        public override Type TerminatorHandlerTypeFactory() => typeof(AwsLambdaTerminator);
+        protected override Type TerminatorHandlerTypeFactory() => typeof(AwsLambdaTerminator);
 
-        protected override HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
+        protected override ICommandDispatcher CustomCommandDispatcherFactory()
         {
-            CommandRegistry.Register<SyncHandler<TFunction, TCommand>>();
-            CommandRegistry.Register<TCommand>(() => (ICommandDispatcher) new AwsLambdaCommandDispatcher(new AwsLambdaCommandExecuter()));
-            return this;
+            return new AwsLambdaCommandDispatcher(new AwsLambdaCommandExecuter());
+        }
+
+        protected override Type FireAndForgetHandlerType()
+        {
+            throw new NotImplementedException();
         }
 
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterAmazonS3ObjectStore();

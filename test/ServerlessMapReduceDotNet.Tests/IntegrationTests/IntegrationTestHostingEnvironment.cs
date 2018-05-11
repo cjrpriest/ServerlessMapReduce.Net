@@ -10,19 +10,15 @@ using ServerlessMapReduceDotNet.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 {
-    public class IntegrationTestHostingEnvironment : HostingEnvironment
+    class IntegrationTestHostingEnvironment : HostingEnvironment
     {
-        public override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
+        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
 
         public override IConfig ConfigFactory() => new IntegrationTestConfig();
-        
-        public override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
 
-        protected override HostingEnvironment RegisterFireAndForgetFunctionImpl<TFunction, TCommand>()
-        {
-            CommandRegistry.Register<SyncHandler<TFunction, TCommand>>();
-            return this;
-        }
+        protected override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
+
+        protected override Type FireAndForgetHandlerType() => typeof(SyncHandler<,>);
 
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
     }
