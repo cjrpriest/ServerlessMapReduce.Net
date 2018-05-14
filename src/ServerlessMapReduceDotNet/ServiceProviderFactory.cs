@@ -4,6 +4,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
+using ServerlessMapReduceDotNet.FinalReducers;
 using ServerlessMapReduceDotNet.Functions;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
@@ -15,6 +16,7 @@ using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Queue.AmazonSqs;
 using ServerlessMapReduceDotNet.Queue.InMemory;
+using ServerlessMapReduceDotNet.Reducers;
 using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet
@@ -40,7 +42,13 @@ namespace ServerlessMapReduceDotNet
 
                 .AddTransient<MakeAccidentCountMapper>()
                 .AddTransient<MostAccidentProneMapper>()
+                
+                .AddTransient<MakeAccidentCountReducer>()
+                .AddTransient<MostAccidentProneReducer>()
 
+                .AddTransient<MakeAccidentCountFinalReducer>()
+                .AddTransient<MostAccidentProneFinalReducer>()
+                
                 .AddTransient<ICommandExecuter, AwsLambdaCommandExecuter>()
                 .AddTransient<ICommandDispatcher, AwsLambdaCommandDispatcher>()
 
@@ -54,7 +62,9 @@ namespace ServerlessMapReduceDotNet
                 .UseCommanding()
                 .Register<IsTerminatedCommandHandler>()
                 .Register<UpdateMonitoringHandler>()
-                .Register<MapperFuncHandler>();
+                .Register<MapperFuncHandler>()
+                .Register<ReducerFuncHandler>()
+                .Register<FinalReducerFuncHandler>();
 
             hostingEnvironment
                 .RegisterHostingEnvironment(commandRegistry, serviceCollection, x =>

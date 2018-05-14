@@ -4,7 +4,7 @@ using ServerlessMapReduceDotNet.Model;
 
 namespace ServerlessMapReduceDotNet.FinalReducers
 {
-    class MostAccidentProneFinalReduce : IFinalReduceFunc
+    class MostAccidentProneFinalReducer : IFinalReduceFunc
     {
         public IReadOnlyCollection<string> FinalReduce(IKeyValuePair keyValuePair)
         {

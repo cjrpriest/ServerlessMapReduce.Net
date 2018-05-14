@@ -34,7 +34,6 @@ namespace ServerlessMapReduceDotNet
             foreach (var arg in args)
                 await serviceProvider.GetService<IQueueClient>().Enqueue(config.RawDataQueueName, arg);
 
-
             var commandDispatcher = serviceProvider.GetService<IFrameworkCommandDispatcher>();
 #pragma warning disable 4014
             commandDispatcher.DispatchAsync(new WorkerManagerCommand());

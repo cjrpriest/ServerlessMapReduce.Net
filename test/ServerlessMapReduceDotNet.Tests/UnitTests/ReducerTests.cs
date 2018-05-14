@@ -5,6 +5,7 @@ using NUnit.Framework;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Functions;
+using ServerlessMapReduceDotNet.Reducers;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
@@ -150,7 +151,9 @@ namespace ServerlessMapReduceDotNet.Tests.UnitTests
             queueClient = CheckParam(queueClient);
             config = CheckParam(config);
             workerRecordStoreService = CheckParam(workerRecordStoreService);
+
             commandDispatcher = CheckParam(commandDispatcher);
+            commandDispatcher.RegisterReducerFunc(new MostAccidentProneReducer());
 
             var redcuer = new Reducer(queueClient, config, workerRecordStoreService, commandDispatcher);
 

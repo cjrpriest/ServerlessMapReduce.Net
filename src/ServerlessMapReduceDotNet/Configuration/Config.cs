@@ -1,6 +1,8 @@
 using System;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.FinalReducers;
 using ServerlessMapReduceDotNet.Mappers;
+using ServerlessMapReduceDotNet.Reducers;
 
 namespace ServerlessMapReduceDotNet.Configuration
 {
@@ -22,6 +24,8 @@ namespace ServerlessMapReduceDotNet.Configuration
 
         public int IngesterMaxLinesPerFile => 10000;
         public Type MapperFuncType => typeof(MostAccidentProneMapper);
+        public Type ReducerFuncType => typeof(MostAccidentProneReducer);
+        public Type FinalReducerFuncType => typeof(MostAccidentProneFinalReducer);
 
         public string AmazonSqsBaseUrl => "https://sqs.eu-west-1.amazonaws.com/525470265062/";
         public string AmazonS3BucketName => "serverless-mapreduce";

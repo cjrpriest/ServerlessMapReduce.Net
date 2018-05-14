@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Queue;
@@ -84,7 +85,7 @@ namespace ServerlessMapReduceDotNet.Functions
                     }
                 }
 
-                var reducedCounts = new MostAccidentProneReducer().Reduce(inputCounts);
+                KeyValuePairCollection reducedCounts = await _commandDispatcher.DispatchAsync(new ReducerFuncCommand { InputKeyValuePairs= inputCounts});
                 
                 var reducedCountsJson = JsonConvert.SerializeObject(reducedCounts, Formatting.None,
                     new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});

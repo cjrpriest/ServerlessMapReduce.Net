@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.FinalReducers;
 using ServerlessMapReduceDotNet.Model;
@@ -53,7 +55,7 @@ namespace ServerlessMapReduceDotNet.Functions
 
                     foreach (var keyValuePair in keyValuePairs)
                     {
-                        var linesToWrite = new MostAccidentProneFinalReduce().FinalReduce(keyValuePair);
+                        var linesToWrite = (await _commandDispatcher.DispatchAsync(new FinalReducerFuncCommand{KeyValuePair = keyValuePair})).Result;
                         foreach (var lineToWrite in linesToWrite)
                             await streamWriter.WriteLineAsync(lineToWrite);
                     }

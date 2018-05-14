@@ -1,6 +1,8 @@
 ﻿using System;
 using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.FinalReducers;
 using ServerlessMapReduceDotNet.Mappers;
+using ServerlessMapReduceDotNet.Reducers;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 {
@@ -22,6 +24,8 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 
         public int IngesterMaxLinesPerFile => 1000;
         public Type MapperFuncType => typeof(MakeAccidentCountMapper);
+        public Type ReducerFuncType => typeof(MakeAccidentCountReducer);
+        public Type FinalReducerFuncType => typeof(MakeAccidentCountFinalReducer);
 
         public string AmazonSqsBaseUrl => "https://sqs.eu-west-1.amazonaws.com/525470265062/";
         public string AmazonS3BucketName => "serverless-mapreduce"; 

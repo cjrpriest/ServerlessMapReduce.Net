@@ -21,6 +21,8 @@ namespace ServerlessMapReduceDotNet.Abstractions
         int IngesterMaxLinesPerFile { get; }
         
         Type MapperFuncType { get; }
+        Type ReducerFuncType { get; }
+        Type FinalReducerFuncType { get; }
         
         string AmazonSqsBaseUrl { get; }
         string AmazonS3BucketName { get; }
