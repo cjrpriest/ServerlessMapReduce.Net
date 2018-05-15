@@ -12,8 +12,6 @@ namespace ServerlessMapReduceDotNet.Functions
 {    
     public class Mapper : IMapper
     {
-        private readonly Regex _keyRegex = new Regex(@".*/(?<objectName>.*?)$", RegexOptions.Compiled);
-        
         private readonly IQueueClient _queueClient;
         private readonly IConfig _config;
         private readonly IWorkerRecordStoreService _workerRecordStoreService;
@@ -43,7 +41,6 @@ namespace ServerlessMapReduceDotNet.Functions
             foreach (var ingestedQueueMessage in ingestedQueueMessages)
             {
                 await _workerRecordStoreService.RecordPing("mapper", instanceWorkerId);
-                var ingestedDataObjectName = _keyRegex.Match(ingestedQueueMessage.Message).Groups["objectName"].Value;
 
                 Stream ingestedObjectStream = await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = ingestedQueueMessage.Message});
 
@@ -59,8 +56,7 @@ namespace ServerlessMapReduceDotNet.Functions
                     await _commandDispatcher.DispatchAsync(new BatchMapperFuncCommand
                     {
                         Lines = lines,
-                        IngestedDataObjectName = ingestedDataObjectName,
-                        IngestedQueueMessageId = ingestedQueueMessage.MessageId
+                        ContextQueueMessage = ingestedQueueMessage
                     });
                 }
             }

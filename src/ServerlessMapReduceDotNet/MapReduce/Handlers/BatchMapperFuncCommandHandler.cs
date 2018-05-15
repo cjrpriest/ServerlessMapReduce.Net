@@ -33,8 +33,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers
 
             await _commandDispatcher.DispatchAsync(new WriteMapperResultsCommand
             {
-                IngestedDataObjectName = command.IngestedDataObjectName,
-                IngestedQueueMessageId = command.IngestedQueueMessageId,
+                ContextQueueMessage = command.ContextQueueMessage,
                 ResultOfMap = keyValuePairCollection
             });
         }

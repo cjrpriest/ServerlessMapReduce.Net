@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
+using ServerlessMapReduceDotNet.MapReduce.Helpers;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers
 {
@@ -34,7 +35,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers
                 }
 
                 await streamWriter.FlushAsync();
-                var mapperOutputKey = $"{_config.MappedFolder}/{command.IngestedDataObjectName}";
+                var mapperOutputKey = $"{_config.MappedFolder}/{command.ContextQueueMessage.Message.ObjectName()}";
                 await _commandDispatcher.DispatchAsync(new StoreObjectCommand
                 {
                     Key = mapperOutputKey,
@@ -42,7 +43,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers
                 });
                 await _queueClient.Enqueue(_config.MappedQueueName, mapperOutputKey);
 
-                await _queueClient.MessageProcessed(_config.IngestedQueueName, command.IngestedQueueMessageId);
+                await _queueClient.MessageProcessed(_config.IngestedQueueName, command.ContextQueueMessage.MessageId);
             }
         }
     }
