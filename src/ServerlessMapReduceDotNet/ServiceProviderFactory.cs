@@ -64,7 +64,10 @@ namespace ServerlessMapReduceDotNet
                 .Register<UpdateMonitoringHandler>()
                 .Register<MapperFuncHandler>()
                 .Register<ReducerFuncHandler>()
-                .Register<FinalReducerFuncHandler>();
+                .Register<FinalReducerFuncHandler>()
+
+                .Register<BatchMapperFuncCommandHandler>()
+                .Register<WriteMapperResultsCommandHandler>();
 
             hostingEnvironment
                 .RegisterHostingEnvironment(commandRegistry, serviceCollection, x =>
