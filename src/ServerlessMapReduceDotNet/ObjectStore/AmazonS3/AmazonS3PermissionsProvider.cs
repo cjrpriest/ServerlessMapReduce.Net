@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Amazon.S3;
-using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.ObjectStore.AmazonS3
 {

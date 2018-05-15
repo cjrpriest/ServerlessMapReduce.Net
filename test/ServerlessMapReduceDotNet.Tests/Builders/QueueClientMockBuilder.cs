@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Queue;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Tests.Builders
 {

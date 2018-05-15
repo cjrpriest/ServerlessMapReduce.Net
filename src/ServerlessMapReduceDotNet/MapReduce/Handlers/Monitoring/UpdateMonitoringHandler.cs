@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
 {

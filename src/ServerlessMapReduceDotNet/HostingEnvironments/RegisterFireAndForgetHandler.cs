@@ -1,7 +1,7 @@
 ﻿using System;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {

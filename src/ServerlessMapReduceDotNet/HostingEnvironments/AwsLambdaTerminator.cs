@@ -1,4 +1,4 @@
-﻿using ServerlessMapReduceDotNet.Abstractions;
+﻿using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {

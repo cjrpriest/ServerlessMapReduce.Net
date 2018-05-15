@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.Mappers;
+using ServerlessMapReduceDotNet.MapReduce.Functions.MakeAccidentCount;
 using ServerlessMapReduceDotNet.Model;
 using Shouldly;
 

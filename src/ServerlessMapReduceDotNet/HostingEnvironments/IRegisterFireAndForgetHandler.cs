@@ -1,5 +1,5 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {

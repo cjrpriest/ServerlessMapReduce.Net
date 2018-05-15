@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests

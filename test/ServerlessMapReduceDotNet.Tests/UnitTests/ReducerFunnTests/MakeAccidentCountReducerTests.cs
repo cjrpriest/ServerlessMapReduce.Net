@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
+using ServerlessMapReduceDotNet.MapReduce.Functions.MakeAccidentCount;
 using ServerlessMapReduceDotNet.Model;
-using ServerlessMapReduceDotNet.Reducers;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests.ReducerFunnTests

@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Services
 {

@@ -1,8 +1,6 @@
 ﻿using System;
-using ServerlessMapReduceDotNet.Abstractions;
-using ServerlessMapReduceDotNet.FinalReducers;
-using ServerlessMapReduceDotNet.Mappers;
-using ServerlessMapReduceDotNet.Reducers;
+using ServerlessMapReduceDotNet.MapReduce.Functions.MakeAccidentCount;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 {

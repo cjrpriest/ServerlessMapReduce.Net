@@ -1,5 +1,5 @@
 ﻿using NSubstitute;
-using ServerlessMapReduceDotNet.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Tests.Builders
 {

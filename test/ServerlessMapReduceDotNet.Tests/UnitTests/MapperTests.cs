@@ -2,9 +2,9 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.Functions;
+using ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.Services;
 using ServerlessMapReduceDotNet.Tests.Builders;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;

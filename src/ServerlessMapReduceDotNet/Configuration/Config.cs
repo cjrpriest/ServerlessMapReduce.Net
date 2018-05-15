@@ -1,8 +1,6 @@
 using System;
-using ServerlessMapReduceDotNet.Abstractions;
-using ServerlessMapReduceDotNet.FinalReducers;
-using ServerlessMapReduceDotNet.Mappers;
-using ServerlessMapReduceDotNet.Reducers;
+using ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Configuration
 {

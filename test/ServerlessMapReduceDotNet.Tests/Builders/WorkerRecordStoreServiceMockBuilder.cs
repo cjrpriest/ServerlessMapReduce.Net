@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using NSubstitute;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Model;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet.Tests.Builders

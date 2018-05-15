@@ -1,11 +1,12 @@
 ﻿using System;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
-using ServerlessMapReduceDotNet.Abstractions;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
+using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Handlers;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
