@@ -9,7 +9,7 @@ using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem
 {
     class FileSystemListObjectKeysCommandHandler : ICommandHandler<ListObjectKeysCommand, IReadOnlyCollection<ListedObject>>
     {

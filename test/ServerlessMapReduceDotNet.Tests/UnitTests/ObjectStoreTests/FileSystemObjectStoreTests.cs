@@ -6,9 +6,9 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 using Shouldly;
 

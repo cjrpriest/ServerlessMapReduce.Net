@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore
 {
     class StoredObject
     {

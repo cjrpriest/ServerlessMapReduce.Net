@@ -5,7 +5,7 @@ using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory
 {
     internal class MemoryListObjectKeysCommandHandler : ICommandHandler<ListObjectKeysCommand, IReadOnlyCollection<ListedObject>>
     {

@@ -2,11 +2,11 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Handlers;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 {

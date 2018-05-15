@@ -3,10 +3,10 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.Handlers;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore
 {
     public static class ObjectStoreExtensions
     {

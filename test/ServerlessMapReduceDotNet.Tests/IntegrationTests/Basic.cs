@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.IntegrationTests

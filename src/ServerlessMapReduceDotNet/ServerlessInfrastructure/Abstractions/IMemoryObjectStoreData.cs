@@ -1,4 +1,4 @@
-﻿using ServerlessMapReduceDotNet.Handlers.ObjectStore;
+﻿using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
 {

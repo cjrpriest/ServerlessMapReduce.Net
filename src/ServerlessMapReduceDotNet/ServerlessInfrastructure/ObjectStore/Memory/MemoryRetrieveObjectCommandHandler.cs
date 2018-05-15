@@ -4,7 +4,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory
 {
     class MemoryRetrieveObjectCommandHandler : ICommandHandler<RetrieveObjectCommand, Stream>
     {

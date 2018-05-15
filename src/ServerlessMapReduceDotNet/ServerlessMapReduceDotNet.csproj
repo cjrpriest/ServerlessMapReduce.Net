@@ -21,7 +21,4 @@
   <ItemGroup>
     <EmbeddedResource Include="MapReduce\Handlers\Monitoring\Monitoring.html" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstractions" />
-  </ItemGroup>
 </Project>

@@ -1,9 +1,10 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore.AmazonS3;
-using ServerlessMapReduceDotNet.Handlers.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore
 {
     public static class CommandRegistryExtensions
     {

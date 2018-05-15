@@ -10,7 +10,7 @@ using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.AmazonS3
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3
 {    
     class AmazonS3RetrieveObjectCommandHandler : ICommandHandler<RetrieveObjectCommand, Stream>
     {
