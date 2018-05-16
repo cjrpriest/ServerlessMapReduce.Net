@@ -2,7 +2,7 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet.Handlers
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers
 {
     public class SyncHandler<TFunction, TCommand> : Handler<TFunction, TCommand>
         where TFunction : IFireAndForgetFunction

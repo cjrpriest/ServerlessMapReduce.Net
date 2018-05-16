@@ -1,4 +1,4 @@
-﻿namespace ServerlessMapReduceDotNet.Handlers.Terminate
+﻿namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate
 {
     abstract class TerminateCommandHandlerBase
     {

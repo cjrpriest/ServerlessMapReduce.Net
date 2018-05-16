@@ -2,7 +2,7 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands;
 
-namespace ServerlessMapReduceDotNet.Handlers.Terminate
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate
 {
     class TerminateCommandHandler : TerminateCommandHandlerBase, ICommandHandler<TerminateCommand>
     {

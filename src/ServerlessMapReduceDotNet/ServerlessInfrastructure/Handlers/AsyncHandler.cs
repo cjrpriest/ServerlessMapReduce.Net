@@ -5,7 +5,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 
-namespace ServerlessMapReduceDotNet.Handlers
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers
 {
     public class AsyncHandler<TFunction, TCommand> : Handler<TFunction, TCommand>
         where TFunction : IFireAndForgetFunction
