@@ -1,4 +1,4 @@
-﻿namespace ServerlessMapReduceDotNet.ObjectStore.FileSystem
+﻿namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem
 {
     public interface IFileObjectStoreConfig
     {

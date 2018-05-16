@@ -1,6 +1,6 @@
 ﻿using Amazon.S3;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.Tests.Builders;
 using Shouldly;
 

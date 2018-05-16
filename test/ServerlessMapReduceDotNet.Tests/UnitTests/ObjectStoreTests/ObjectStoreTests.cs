@@ -8,7 +8,8 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.ObjectStore;
+using ServerlessMapReduceDotNet.Model;
+using ServerlessMapReduceDotNet.Model.ObjectStore;
 using ServerlessMapReduceDotNet.Services;
 using Shouldly;
 

@@ -6,7 +6,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3

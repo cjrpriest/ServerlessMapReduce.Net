@@ -6,7 +6,7 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore
 {
-    public static class CommandRegistryExtensions
+    public static class ObjectStoreCommandRegistryExtensions
     {
         public static ICommandRegistry RegisterMemoryObjectStore(this ICommandRegistry commandRegistry)
         {

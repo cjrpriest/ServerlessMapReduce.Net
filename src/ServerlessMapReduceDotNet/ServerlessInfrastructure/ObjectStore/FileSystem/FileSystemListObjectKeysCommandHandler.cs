@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.ObjectStore;
-using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.Model;
+using ServerlessMapReduceDotNet.Model.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem
 {

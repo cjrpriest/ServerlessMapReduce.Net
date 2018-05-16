@@ -4,7 +4,6 @@ using NSubstitute;
 using ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Handlers;
-using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;

@@ -3,7 +3,7 @@ using System.IO;
 using Amazon.S3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet.ObjectStore.AmazonS3
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3
 {
     class AmazonS3PermissionsProvider
     {

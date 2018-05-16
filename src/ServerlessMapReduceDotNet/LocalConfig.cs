@@ -1,5 +1,5 @@
 using System;
-using ServerlessMapReduceDotNet.ObjectStore.FileSystem;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
 
 namespace ServerlessMapReduceDotNet
 {
