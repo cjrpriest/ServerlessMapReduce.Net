@@ -15,5 +15,5 @@
   "function-runtime":"dotnetcore2.0",
   "function-memory-size" : 1024,
   "function-timeout" : 120,
-  "function-handler" : "ServerlessMapReduceDotNet::ServerlessMapReduceDotNet.LambdaEntryPoints.LambdaCommandRouter::Route"
+  "function-handler" : "ServerlessMapReduceDotNet::ServerlessMapReduceDotNet.EntryPoints.Lambda.LambdaCommandRouter::Route"
 }
