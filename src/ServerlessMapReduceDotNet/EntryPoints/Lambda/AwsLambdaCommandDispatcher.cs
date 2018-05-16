@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using AzureFromTheTrenches.Commanding.Abstractions.Model;
 
-namespace ServerlessMapReduceDotNet.LambdaEntryPoints
+namespace ServerlessMapReduceDotNet.EntryPoints.Lambda
 {
     internal class AwsLambdaCommandDispatcher : ICommandDispatcher, IFrameworkCommandDispatcher
     {

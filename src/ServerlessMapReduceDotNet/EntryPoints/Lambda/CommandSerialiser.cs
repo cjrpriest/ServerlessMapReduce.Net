@@ -3,7 +3,7 @@ using System.IO;
 using Amazon.Lambda.Core;
 using Newtonsoft.Json;
 
-namespace ServerlessMapReduceDotNet.LambdaEntryPoints
+namespace ServerlessMapReduceDotNet.EntryPoints.Lambda
 {
     public class CommandSerialiser : ILambdaSerializer
     {

@@ -2,8 +2,8 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Configuration;
+using ServerlessMapReduceDotNet.EntryPoints.Lambda;
 using ServerlessMapReduceDotNet.Handlers;
-using ServerlessMapReduceDotNet.LambdaEntryPoints;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;

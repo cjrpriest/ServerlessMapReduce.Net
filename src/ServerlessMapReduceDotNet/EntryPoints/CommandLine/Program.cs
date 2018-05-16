@@ -8,7 +8,7 @@ using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.HostingEnvironments;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
-namespace ServerlessMapReduceDotNet
+namespace ServerlessMapReduceDotNet.EntryPoints.CommandLine
 {
     public class Program
     {
@@ -20,7 +20,7 @@ namespace ServerlessMapReduceDotNet
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Demystify());
+                System.Console.WriteLine(e.Demystify());
             }
         }
 
@@ -43,7 +43,7 @@ namespace ServerlessMapReduceDotNet
             sw.Start();
             BlockUntilJobTerminates(commandDispatcher);
             sw.Stop();
-            Console.WriteLine($"That took {sw.Elapsed.TotalSeconds:0.0}s");
+            System.Console.WriteLine($"That took {sw.Elapsed.TotalSeconds:0.0}s");
         }
 
         private static async void BlockUntilJobTerminates(IFrameworkCommandDispatcher commandDispatcher)

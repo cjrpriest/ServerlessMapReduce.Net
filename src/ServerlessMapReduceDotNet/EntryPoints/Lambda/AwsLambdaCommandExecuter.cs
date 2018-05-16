@@ -7,7 +7,7 @@ using Amazon.Lambda.Model;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 
-namespace ServerlessMapReduceDotNet.LambdaEntryPoints
+namespace ServerlessMapReduceDotNet.EntryPoints.Lambda
 {
   internal class AwsLambdaCommandExecuter : ICommandExecuter, IFrameworkCommandExecuter
   {
