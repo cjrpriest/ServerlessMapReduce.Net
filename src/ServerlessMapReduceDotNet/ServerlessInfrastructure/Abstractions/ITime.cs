@@ -1,6 +1,6 @@
 using System;
 
-namespace ServerlessMapReduceDotNet
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
 {
     public interface ITime
     {

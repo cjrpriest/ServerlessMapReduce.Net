@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Queue.InMemory;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 using Shouldly;
 

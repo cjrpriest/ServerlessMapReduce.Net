@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 
 namespace ServerlessMapReduceDotNet.Handlers
 {

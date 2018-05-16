@@ -3,6 +3,7 @@ using AzureFromTheTrenches.Commanding;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Commands;
+using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.EntryPoints.Lambda;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.HostingEnvironments;
@@ -32,7 +33,7 @@ namespace ServerlessMapReduceDotNet
 
             var serviceCollection = new ServiceCollection()
 
-                .AddTransient<IFileObjectStoreConfig, LocalConfig>() //don't like this
+                .AddTransient<IFileObjectStoreConfig, FileSystemObjectStoreLocalConfig>() //don't like this
                 .AddTransient<AmazonS3PermissionsProvider>()
 
                 .AddTransient<InMemoryQueueClient>()

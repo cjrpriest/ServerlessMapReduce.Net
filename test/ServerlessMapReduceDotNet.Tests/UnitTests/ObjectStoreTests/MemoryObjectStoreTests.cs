@@ -1,4 +1,5 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests
