@@ -7,7 +7,6 @@ using ServerlessMapReduceDotNet.MapReduce.Handlers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;
-using ServerlessMapReduceDotNet.Services;
 
 namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
 {
@@ -15,7 +14,7 @@ namespace ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock
     {
         public static ICommandDispatcher RegisterMemoryObjectStore(this ICommandDispatcher commandDispatcherMock, ITime timeMock)
         {
-            var memoryObjectStoreData = new MemoryObjectStoreData();
+            var memoryObjectStoreData = new MemoryObjectStore();
 
             commandDispatcherMock
                 .Register(new MemoryListObjectKeysCommandHandler(memoryObjectStoreData))

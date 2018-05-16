@@ -7,6 +7,7 @@ using ServerlessMapReduceDotNet.Handlers.Terminate;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {

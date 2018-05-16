@@ -10,7 +10,6 @@ using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Commands;
 using ServerlessMapReduceDotNet.Model;
-using ServerlessMapReduceDotNet.Queue;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions

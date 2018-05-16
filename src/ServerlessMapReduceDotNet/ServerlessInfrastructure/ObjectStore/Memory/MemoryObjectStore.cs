@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
-using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 
-namespace ServerlessMapReduceDotNet.Services
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory
 {
-    class MemoryObjectStoreData : IMemoryObjectStoreData
+    class MemoryObjectStore : IMemoryObjectStore
     {
         private readonly ConcurrentDictionary<string, StoredObject> _store = new ConcurrentDictionary<string, StoredObject>();
 

@@ -11,12 +11,12 @@ namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory
     class MemoryStoreObjectCommandHandler : ICommandHandler<StoreObjectCommand>
     {
         private readonly ITime _time;
-        private readonly IMemoryObjectStoreData _memoryObjectStoreData;
+        private readonly IMemoryObjectStore _memoryObjectStore;
 
-        public MemoryStoreObjectCommandHandler(ITime time, IMemoryObjectStoreData memoryObjectStoreData)
+        public MemoryStoreObjectCommandHandler(ITime time, IMemoryObjectStore memoryObjectStore)
         {
             _time = time;
-            _memoryObjectStoreData = memoryObjectStoreData;
+            _memoryObjectStore = memoryObjectStore;
         }
 
         public Task ExecuteAsync(StoreObjectCommand command)
@@ -30,7 +30,7 @@ namespace ServerlessMapReduceDotNet.Handlers.ObjectStore.Memory
                     LastModified = _time.UtcNow,
                     Data = memoryStream.ToArray()
                 };
-                _memoryObjectStoreData.Add(
+                _memoryObjectStore.Add(
                     command.Key,
                     newStoredObject
                 );

@@ -6,7 +6,7 @@ using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions;
 using ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 using ServerlessMapReduceDotNet.Tests.Builders;
 using ServerlessMapReduceDotNet.Tests.Extensions.CommandDispatcherMock;
 

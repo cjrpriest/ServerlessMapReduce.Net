@@ -1,4 +1,4 @@
-namespace ServerlessMapReduceDotNet.Queue
+namespace ServerlessMapReduceDotNet.Model
 {
     public class QueueMessage
     {

@@ -2,5 +2,5 @@
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
 {
-    interface IMemoryObjectStoreData : IConcurrentKeyValueStore<string, StoredObject> { }
+    interface IMemoryObjectStore : IConcurrentKeyValueStore<string, StoredObject> { }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ServerlessMapReduceDotNet.Queue;
+using ServerlessMapReduceDotNet.Model;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
 {

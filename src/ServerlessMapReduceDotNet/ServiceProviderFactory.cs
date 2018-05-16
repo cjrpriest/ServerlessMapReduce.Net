@@ -13,12 +13,14 @@ using ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne;
 using ServerlessMapReduceDotNet.MapReduce.Handlers;
 using ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper;
 using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
-using ServerlessMapReduceDotNet.Queue.AmazonSqs;
 using ServerlessMapReduceDotNet.Queue.InMemory;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet
 {
@@ -53,7 +55,7 @@ namespace ServerlessMapReduceDotNet
                 .AddTransient<ICommandExecuter, AwsLambdaCommandExecuter>()
                 .AddTransient<ICommandDispatcher, AwsLambdaCommandDispatcher>()
 
-                .AddSingleton<IMemoryObjectStoreData, MemoryObjectStoreData>();
+                .AddSingleton<IMemoryObjectStore, MemoryObjectStore>();
 
             var commandRegistry = new CommandingDependencyResolver(
                     (type, instance) => serviceCollection.AddSingleton(type, instance),

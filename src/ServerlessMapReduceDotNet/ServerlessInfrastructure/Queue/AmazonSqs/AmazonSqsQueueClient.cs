@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 
-namespace ServerlessMapReduceDotNet.Queue.AmazonSqs
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs
 {
     class AmazonSqsQueueClient : IQueueClient
     {

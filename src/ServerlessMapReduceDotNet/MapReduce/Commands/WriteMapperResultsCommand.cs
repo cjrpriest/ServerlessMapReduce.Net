@@ -1,6 +1,5 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Model;
-using ServerlessMapReduceDotNet.Queue;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Commands
 {

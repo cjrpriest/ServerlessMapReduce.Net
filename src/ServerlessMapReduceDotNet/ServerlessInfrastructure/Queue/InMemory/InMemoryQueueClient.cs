@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.Queue.InMemory
 {

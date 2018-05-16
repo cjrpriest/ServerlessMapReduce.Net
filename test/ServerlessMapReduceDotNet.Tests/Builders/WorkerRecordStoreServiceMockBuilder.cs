@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NSubstitute;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 
 namespace ServerlessMapReduceDotNet.Tests.Builders
 {

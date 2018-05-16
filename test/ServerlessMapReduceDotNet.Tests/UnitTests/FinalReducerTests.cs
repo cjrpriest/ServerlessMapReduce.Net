@@ -7,7 +7,7 @@ using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 using ServerlessMapReduceDotNet.Tests.Builders;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests

@@ -1,6 +1,6 @@
 using System;
 
-namespace ServerlessMapReduceDotNet.Queue.InMemory
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory
 {
     internal class InMemoryInternalQueueMessage
     {

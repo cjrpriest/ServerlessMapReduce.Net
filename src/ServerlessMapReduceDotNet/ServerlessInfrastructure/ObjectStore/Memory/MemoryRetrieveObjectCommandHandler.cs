@@ -8,16 +8,16 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory
 {
     class MemoryRetrieveObjectCommandHandler : ICommandHandler<RetrieveObjectCommand, Stream>
     {
-        private readonly IMemoryObjectStoreData _memoryObjectStoreData;
+        private readonly IMemoryObjectStore _memoryObjectStore;
 
-        public MemoryRetrieveObjectCommandHandler(IMemoryObjectStoreData memoryObjectStoreData)
+        public MemoryRetrieveObjectCommandHandler(IMemoryObjectStore memoryObjectStore)
         {
-            _memoryObjectStoreData = memoryObjectStoreData;
+            _memoryObjectStore = memoryObjectStore;
         }
 
         public Task<Stream> ExecuteAsync(RetrieveObjectCommand command, Stream previousResult)
         {
-            var storedObject = _memoryObjectStoreData.Retrieve(command.Key);
+            var storedObject = _memoryObjectStore.Retrieve(command.Key);
             var memoryStream = new MemoryStream(storedObject.Data);
             return Task.FromResult((Stream)memoryStream);
         }

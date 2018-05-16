@@ -10,18 +10,18 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory
 {
     internal class MemoryListObjectKeysCommandHandler : ICommandHandler<ListObjectKeysCommand, IReadOnlyCollection<ListedObject>>
     {
-        private readonly IMemoryObjectStoreData _memoryObjectStoreData;
+        private readonly IMemoryObjectStore _memoryObjectStore;
 
-        public MemoryListObjectKeysCommandHandler(IMemoryObjectStoreData memoryObjectStoreData)
+        public MemoryListObjectKeysCommandHandler(IMemoryObjectStore memoryObjectStore)
         {
-            _memoryObjectStoreData = memoryObjectStoreData;
+            _memoryObjectStore = memoryObjectStore;
         }
 
         public Task<IReadOnlyCollection<ListedObject>> ExecuteAsync(ListObjectKeysCommand command, IReadOnlyCollection<ListedObject> previousResult)
         {
             var listedObjects = new List<ListedObject>();
 
-            foreach (var storedObject in _memoryObjectStoreData)
+            foreach (var storedObject in _memoryObjectStore)
             {
                 if (storedObject.Key.StartsWith(command.Prefix))
                 {

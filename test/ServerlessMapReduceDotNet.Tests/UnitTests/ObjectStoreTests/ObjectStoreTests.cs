@@ -10,7 +10,7 @@ using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Model.ObjectStore;
-using ServerlessMapReduceDotNet.Services;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 using Shouldly;
 
 namespace ServerlessMapReduceDotNet.Tests.UnitTests.ObjectStoreTests

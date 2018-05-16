@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.Handlers;
 using ServerlessMapReduceDotNet.Handlers.Terminate;
-using ServerlessMapReduceDotNet.Queue.AmazonSqs;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
