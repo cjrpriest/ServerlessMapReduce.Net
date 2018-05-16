@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
-using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.MapReduce.Commands;
 using ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;

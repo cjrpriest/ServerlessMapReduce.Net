@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Commands;
 using ServerlessMapReduceDotNet.Model;

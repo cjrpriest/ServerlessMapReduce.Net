@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Model.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions

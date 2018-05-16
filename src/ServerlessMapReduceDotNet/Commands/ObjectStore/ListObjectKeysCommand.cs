@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using AzureFromTheTrenches.Commanding.Abstractions;
-using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Model.ObjectStore;
 
 namespace ServerlessMapReduceDotNet.Commands.ObjectStore
