@@ -21,7 +21,6 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.Memory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;
-using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet
 {

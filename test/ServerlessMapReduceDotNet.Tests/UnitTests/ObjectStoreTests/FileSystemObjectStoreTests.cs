@@ -6,7 +6,6 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using NSubstitute;
 using NUnit.Framework;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.Model.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
