@@ -16,6 +16,7 @@ using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
@@ -45,17 +46,19 @@ namespace ServerlessMapReduceDotNet
 
                 .AddTransient<MakeAccidentCountMapper>()
                 .AddTransient<MostAccidentProneMapper>()
-                
+
                 .AddTransient<MakeAccidentCountReducer>()
                 .AddTransient<MostAccidentProneReducer>()
 
                 .AddTransient<MakeAccidentCountFinalReducer>()
                 .AddTransient<MostAccidentProneFinalReducer>()
-                
+
                 .AddTransient<ICommandExecuter, AwsLambdaCommandExecuter>()
                 .AddTransient<ICommandDispatcher, AwsLambdaCommandDispatcher>()
 
-                .AddSingleton<IMemoryObjectStore, MemoryObjectStore>();
+                .AddSingleton<IMemoryObjectStore, MemoryObjectStore>()
+
+                .AddTransient<QueueCommandDispatcher>().AddTransient<QueueCommandExecuter>();
 
             var commandRegistry = new CommandingDependencyResolver(
                     (type, instance) => serviceCollection.AddSingleton(type, instance),
@@ -73,7 +76,7 @@ namespace ServerlessMapReduceDotNet
                 .Register<WriteMapperResultsCommandHandler>();
 
             hostingEnvironment
-                .RegisterHostingEnvironment(commandRegistry, serviceCollection, x =>
+                .RegisterHostingEnvironment(commandRegistry, serviceCollection, () => serviceProvider, x =>
                 {
                     x
                         .RegisterFireAndForgetFunctionImpl<Ingester, IngestCommand>()

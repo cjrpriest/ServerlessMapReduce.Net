@@ -17,14 +17,14 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 
         protected virtual ICommandDispatcher CustomCommandDispatcherFactory() => null;
 
-        protected virtual void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry) { }
+        protected virtual void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory) { }
 
         protected abstract void RegisterObjectStoreImpl(ICommandRegistry cr);
 
-        public void RegisterHostingEnvironment(ICommandRegistry commandRegistry, IServiceCollection serviceCollection, Action<IRegisterFireAndForgetHandler> registerFireAndForgetHandlers)
+        public void RegisterHostingEnvironment(ICommandRegistry commandRegistry, IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory, Action<IRegisterFireAndForgetHandler> registerFireAndForgetHandlers)
         {
             commandRegistry.Register(TerminatorHandlerTypeFactory());
-            RegisterMiscHandlersImpl(commandRegistry);
+            RegisterMiscHandlersImpl(commandRegistry, serviceProviderFactory);
             RegisterObjectStoreImpl(commandRegistry);
             registerFireAndForgetHandlers(new RegisterFireAndForgetHandler(commandRegistry, serviceCollection, FireAndForgetHandlerType(), CustomCommandDispatcherFactory()));
             
