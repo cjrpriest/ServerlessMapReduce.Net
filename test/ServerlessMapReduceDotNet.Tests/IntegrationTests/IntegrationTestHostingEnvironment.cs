@@ -23,8 +23,12 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
         protected override Type FireAndForgetHandlerType() => typeof(SyncHandler<,>);
 
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
-        
-        protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory) =>
+
+        protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry,
+            Func<IServiceProvider> serviceProviderFactory)
+        {
             commandRegistry.Register<BatchMapperFuncCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            commandRegistry.Register<WriteMapperResultsCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+        }
     }
 }
