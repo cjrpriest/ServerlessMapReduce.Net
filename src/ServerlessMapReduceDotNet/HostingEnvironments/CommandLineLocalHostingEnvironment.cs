@@ -25,7 +25,10 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterFileSystemObjectStore();
 
-        protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory) =>
+        protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory)
+        {
             commandRegistry.Register<BatchMapperFuncCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            commandRegistry.Register<WriteMapperResultsCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+        }
     }
 }
