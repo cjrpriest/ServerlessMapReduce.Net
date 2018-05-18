@@ -2,8 +2,10 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.HostingEnvironments;
+using ServerlessMapReduceDotNet.MapReduce.Commands;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
@@ -21,5 +23,8 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
         protected override Type FireAndForgetHandlerType() => typeof(SyncHandler<,>);
 
         protected override void RegisterObjectStoreImpl(ICommandRegistry cr) => cr.RegisterMemoryObjectStore();
+        
+        protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory) =>
+            commandRegistry.Register<BatchMapperFuncCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
     }
 }

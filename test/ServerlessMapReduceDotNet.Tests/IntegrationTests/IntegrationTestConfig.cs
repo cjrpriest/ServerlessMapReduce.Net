@@ -19,6 +19,7 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
         public string MappedQueueName => "serverless-mapreduce-mapped.fifo";
         public string ReducedQueueName => "serverless-mapreduce-reduced.fifo";
         public string FinalReducedQueueName => "serverless-mapreduce-finalreduced.fifo";
+        public string CommandQueueName => "serverless-mapreduce-commandQueue.fifo";
 
         public int IngesterMaxLinesPerFile => 1000;
         public Type MapperFuncType => typeof(MakeAccidentCountMapper);

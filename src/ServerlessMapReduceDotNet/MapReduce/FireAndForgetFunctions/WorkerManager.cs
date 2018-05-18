@@ -8,6 +8,7 @@ using ServerlessMapReduceDotNet.Commands;
 using ServerlessMapReduceDotNet.MapReduce.Commands;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Commands;
 
 namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
 {
@@ -43,6 +44,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
                 await RegulateRunningInstances(_config.RawDataQueueName, workerRecords, "ingester", () => new IngestCommand());
                 await RegulateRunningInstances(_config.IngestedQueueName, workerRecords, "mapper", () => new MapperCommand());
                 await RegulateRunningInstances(new[] {_config.MappedQueueName, _config.ReducedQueueName}, workerRecords, "reducer", () => new ReducerCommand());
+                await RegulateRunningInstances(_config.CommandQueueName, workerRecords, "commandQueue", () => new CommandExecuterCommand());
             }
             else
                 await _dispatcher.DispatchAsync(new FinalReducerCommand());   
@@ -93,7 +95,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
         {
             return !RunningWorkers(workerRecords, "ingester")
                    && !RunningWorkers(workerRecords, "mapper")
-                   && !RunningWorkers(workerRecords, "reducer");
+                   && !RunningWorkers(workerRecords, "reducer")
+                   && !RunningWorkers(workerRecords, "commandQueue");
         }
 
         private async Task RegulateRunningInstances(string queueName, IReadOnlyCollection<WorkerRecord> workerRecords, string workerType, Func<ICommand> commandFactory)

@@ -16,7 +16,9 @@ using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Commands;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.FireAndForgetFunctions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.AmazonS3;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore.FileSystem;
@@ -83,7 +85,8 @@ namespace ServerlessMapReduceDotNet
                         .RegisterFireAndForgetFunctionImpl<Mapper, MapperCommand>()
                         .RegisterFireAndForgetFunctionImpl<Reducer, ReducerCommand>()
                         .RegisterFireAndForgetFunctionImpl<FinalReducer, FinalReducerCommand>()
-                        .RegisterFireAndForgetFunctionImpl<WorkerManager, WorkerManagerCommand>();
+                        .RegisterFireAndForgetFunctionImpl<WorkerManager, WorkerManagerCommand>()
+                        .RegisterFireAndForgetFunctionImpl<CommandExecuter, CommandExecuterCommand>();
                 });
             
             serviceProvider = serviceCollection.BuildServiceProvider();

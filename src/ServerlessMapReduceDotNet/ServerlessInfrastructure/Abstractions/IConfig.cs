@@ -17,6 +17,7 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
         string MappedQueueName { get; }
         string ReducedQueueName { get; }
         string FinalReducedQueueName { get; }
+        string CommandQueueName { get; }
         
         int IngesterMaxLinesPerFile { get; }
         

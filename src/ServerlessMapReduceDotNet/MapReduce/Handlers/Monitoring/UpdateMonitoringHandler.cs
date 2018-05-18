@@ -32,17 +32,20 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
             var mappedQueueCount = await _queueClient.MessageCount(_config.MappedQueueName);
             var reducedQueueCount = await _queueClient.MessageCount(_config.ReducedQueueName);
             var finalReducedQueueCount = await _queueClient.MessageCount(_config.FinalReducedQueueName);
+            var commandExecuterQueueCount = await _queueClient.MessageCount(_config.CommandQueueName);
 
             var workerRecords = await _workerRecordStoreService.GetAllWorkerRecords();
             var ingesterWorkerRecords = workerRecords.Where(x => x.Type == "ingester" && !x.HasTerminated);
             var mapperWorkerRecords = workerRecords.Where(x => x.Type == "mapper" && !x.HasTerminated);
             var reducerWorkerRecords = workerRecords.Where(x => x.Type == "reducer" && !x.HasTerminated);
             var finalReducerWorkerRecords = workerRecords.Where(x => x.Type == "finalReducer" && !x.HasTerminated);
+            var commandExecuterWorkerRecords = workerRecords.Where(x => x.Type == "commandExecuter" && !x.HasTerminated);
 
             var runningIngestersCount = ingesterWorkerRecords.Count();
             var runningMappersCount = mapperWorkerRecords.Count();
             var runningReducersCount = reducerWorkerRecords.Count();
             var runningFinalReducerCount = finalReducerWorkerRecords.Count();
+            var runningCommandExecuterCount = commandExecuterWorkerRecords.Count();
 
             var htmlTemplate = LoadHtmlTemplate();
             var html = htmlTemplate
@@ -54,7 +57,10 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
                 .Replace("#runningMappersCount#", runningMappersCount.ToString())
                 .Replace("#runningReducersCount#", runningReducersCount.ToString())
                 .Replace("#runningFinalReducersCount#", runningFinalReducerCount.ToString())
-                .Replace("#finalReducedQueueCount#", finalReducedQueueCount.ToString());
+                .Replace("#finalReducedQueueCount#", finalReducedQueueCount.ToString())
+                .Replace("#runningCommandExecuterCount#", runningCommandExecuterCount.ToString())
+                .Replace("#commandExecuterQueueCount#", commandExecuterQueueCount.ToString());
+
 
             using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(html)))
             {
