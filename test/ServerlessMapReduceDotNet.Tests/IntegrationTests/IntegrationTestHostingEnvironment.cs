@@ -2,7 +2,7 @@
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.HostingEnvironments;
-using ServerlessMapReduceDotNet.MapReduce.Commands;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Map;
 using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;

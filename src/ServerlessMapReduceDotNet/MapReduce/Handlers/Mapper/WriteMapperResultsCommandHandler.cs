@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
-using ServerlessMapReduceDotNet.MapReduce.Commands;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Map;
 using ServerlessMapReduceDotNet.MapReduce.Helpers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 

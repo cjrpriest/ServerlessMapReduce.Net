@@ -1,7 +1,7 @@
 ﻿using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.Model;
 
-namespace ServerlessMapReduceDotNet.MapReduce.Commands
+namespace ServerlessMapReduceDotNet.MapReduce.Commands.Reduce
 {
     public class ReducerFuncCommand : ICommand<KeyValuePairCollection>
     {

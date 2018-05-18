@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
-using ServerlessMapReduceDotNet.MapReduce.Commands;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Reduce;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 

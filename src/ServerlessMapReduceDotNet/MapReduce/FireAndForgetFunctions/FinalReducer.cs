@@ -6,7 +6,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
-using ServerlessMapReduceDotNet.MapReduce.Commands;
+using ServerlessMapReduceDotNet.MapReduce.Commands.FinalReduce;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 

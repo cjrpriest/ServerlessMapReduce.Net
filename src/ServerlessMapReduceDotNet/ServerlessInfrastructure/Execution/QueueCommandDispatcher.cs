@@ -1,7 +1,6 @@
 ﻿using System;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution
 {
