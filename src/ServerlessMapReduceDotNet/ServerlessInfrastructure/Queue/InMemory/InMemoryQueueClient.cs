@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.Queue.InMemory
@@ -27,7 +28,7 @@ namespace ServerlessMapReduceDotNet.Queue.InMemory
         {
             lock (_queueCollectionLock)
             {
-                Console.WriteLine($"Enqueing message {message} to queue {queueName}");
+                Console.WriteLine($"Enqueing message {message.TopAndTail(1000)} to queue {queueName}");
                 EnsureQueuePresent(queueName);
                 var newMessageId = Guid.NewGuid().ToString();
                 _queues[queueName].TryAdd(newMessageId,
@@ -53,7 +54,7 @@ namespace ServerlessMapReduceDotNet.Queue.InMemory
                     var success = Dequeue(_queues[queueName], out var message);
                     if (!success) break;
                     
-                    Console.WriteLine($"Deqeuing message {message.Message} from queue {queueName}");
+                    Console.WriteLine($"Deqeuing message {message.Message.TopAndTail(1000)} from queue {queueName}");
                     messages.Add(new QueueMessage
                     {
                         MessageId = message.MessageId,
