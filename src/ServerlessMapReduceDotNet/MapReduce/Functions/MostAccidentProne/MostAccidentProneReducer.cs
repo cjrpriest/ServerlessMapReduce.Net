@@ -14,8 +14,10 @@ namespace ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne
             inputKeyValuePairs.ForEach(x =>
             {
                 var mostAccidentProneKvp = (MostAccidentProneKvp)x;
+                
                 if (!reducedMostAccidentProne.ContainsKey(mostAccidentProneKvp.Key))
                     reducedMostAccidentProne.Add(mostAccidentProneKvp.Key, new AccidentStats());
+                
                 reducedMostAccidentProne[mostAccidentProneKvp.Key] =
                     ReduceAccidentStats(reducedMostAccidentProne[mostAccidentProneKvp.Key], mostAccidentProneKvp.Value);
             });
@@ -47,6 +49,9 @@ namespace ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne
         {
             try
             {
+                if (kvp1 == null) return 1;
+                if (kvp2 == null) return -1;
+                
                 var mostAccidentProneKvp1 = ((MostAccidentProneKvp) kvp1);
                 var mostAccidentProneKvp2 = ((MostAccidentProneKvp) kvp2);
                 return mostAccidentProneKvp1.Value.RegistrationsPerAccident
