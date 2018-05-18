@@ -9,20 +9,20 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
 {
-    public class WriteMapperResultsCommandHandler : ICommandHandler<WriteMapperResultsCommand>
+    public class WriteMappedDataCommandHandler : ICommandHandler<WriteMappedDataCommand>
     {
         private readonly IConfig _config;
         private readonly ICommandDispatcher _commandDispatcher;
         private readonly IQueueClient _queueClient;
 
-        public WriteMapperResultsCommandHandler(IConfig config, ICommandDispatcher commandDispatcher, IQueueClient queueClient)
+        public WriteMappedDataCommandHandler(IConfig config, ICommandDispatcher commandDispatcher, IQueueClient queueClient)
         {
             _config = config;
             _commandDispatcher = commandDispatcher;
             _queueClient = queueClient;
         }
         
-        public async Task ExecuteAsync(WriteMapperResultsCommand command)
+        public async Task ExecuteAsync(WriteMappedDataCommand command)
         {
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))

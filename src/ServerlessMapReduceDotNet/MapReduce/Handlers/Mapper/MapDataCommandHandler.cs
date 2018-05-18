@@ -8,18 +8,18 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
 {
-    public class MapperFuncCommandHandler : ICommandHandler<MapperFuncCommand, KeyValuePairCollection>
+    public class MapDataCommandHandler : ICommandHandler<MapDataCommand, KeyValuePairCollection>
     {
         private readonly IConfig _config;
         private readonly IServiceProvider _serviceProvider;
 
-        public MapperFuncCommandHandler(IConfig config, IServiceProvider serviceProvider)
+        public MapDataCommandHandler(IConfig config, IServiceProvider serviceProvider)
         {
             _config = config;
             _serviceProvider = serviceProvider;
         }
         
-        public async Task<KeyValuePairCollection> ExecuteAsync(MapperFuncCommand command, KeyValuePairCollection previousResult)
+        public async Task<KeyValuePairCollection> ExecuteAsync(MapDataCommand command, KeyValuePairCollection previousResult)
         {
             var mapperFunc = (IMapperFunc)_serviceProvider.GetService(_config.MapperFuncType);
 

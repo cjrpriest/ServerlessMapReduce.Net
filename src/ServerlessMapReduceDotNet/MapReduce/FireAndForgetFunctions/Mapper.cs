@@ -53,7 +53,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
                         lines.Add(line);
                     }
 
-                    await _commandDispatcher.DispatchAsync(new BatchMapperFuncCommand
+                    await _commandDispatcher.DispatchAsync(new BatchMapDataCommand
                     {
                         Lines = lines,
                         ContextQueueMessage = ingestedQueueMessage

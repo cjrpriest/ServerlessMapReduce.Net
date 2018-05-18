@@ -8,20 +8,20 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
 {
-    public class BatchMapperFuncCommandHandler : ICommandHandler<BatchMapperFuncCommand>
+    public class BatchMapDataCommandHandler : ICommandHandler<BatchMapDataCommand>
     {
         private readonly IConfig _config;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICommandDispatcher _commandDispatcher;
 
-        public BatchMapperFuncCommandHandler(IConfig config, IServiceProvider serviceProvider, ICommandDispatcher commandDispatcher)
+        public BatchMapDataCommandHandler(IConfig config, IServiceProvider serviceProvider, ICommandDispatcher commandDispatcher)
         {
             _config = config;
             _serviceProvider = serviceProvider;
             _commandDispatcher = commandDispatcher;
         }
         
-        public async Task ExecuteAsync(BatchMapperFuncCommand command)
+        public async Task ExecuteAsync(BatchMapDataCommand command)
         {
             var mapperFunc = (IMapperFunc)_serviceProvider.GetService(_config.MapperFuncType);
             
@@ -32,7 +32,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
                 keyValuePairCollection.AddRange(mapperFunc.Map(line));
             }
 
-            await _commandDispatcher.DispatchAsync(new WriteMapperResultsCommand
+            await _commandDispatcher.DispatchAsync(new WriteMappedDataCommand
             {
                 ContextQueueMessage = command.ContextQueueMessage,
                 ResultOfMap = keyValuePairCollection

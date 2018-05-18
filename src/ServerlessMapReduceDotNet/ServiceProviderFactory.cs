@@ -72,12 +72,12 @@ namespace ServerlessMapReduceDotNet
                 .UseCommanding()
                 .Register<IsTerminatedCommandHandler>()
                 .Register<UpdateMonitoringHandler>()
-                .Register<MapperFuncCommandHandler>()
+                .Register<MapDataCommandHandler>()
                 .Register<ReducerFuncHandler>()
                 .Register<FinalReducerFuncHandler>()
 
-                .Register<BatchMapperFuncCommandHandler>()
-                .Register<WriteMapperResultsCommandHandler>();
+                .Register<BatchMapDataCommandHandler>()
+                .Register<WriteMappedDataCommandHandler>();
 
             hostingEnvironment
                 .RegisterHostingEnvironment(commandRegistry, serviceCollection, () => serviceProvider, x =>

@@ -26,8 +26,8 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 
         protected override void RegisterMiscHandlersImpl(ICommandRegistry commandRegistry, Func<IServiceProvider> serviceProviderFactory)
         {
-            commandRegistry.Register<BatchMapperFuncCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
-            commandRegistry.Register<WriteMapperResultsCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            commandRegistry.Register<BatchMapDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            commandRegistry.Register<WriteMappedDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
         }
     }
 }
