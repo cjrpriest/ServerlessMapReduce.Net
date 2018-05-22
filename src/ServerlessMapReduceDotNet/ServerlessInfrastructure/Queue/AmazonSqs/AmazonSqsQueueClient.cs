@@ -12,7 +12,6 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs
     class AmazonSqsQueueClient : IQueueClient
     {
         private readonly IConfig _config;
-        
         private readonly AmazonSQSClient _sqsClient;
 
         public AmazonSqsQueueClient(IConfig config)
@@ -21,7 +20,7 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs
 
             var amazonSqsClientConfig = new AmazonSQSConfig
             {
-                ServiceURL = "https://sqs.eu-west-1.amazonaws.com"
+                ServiceURL = _config.AmazonSqsServiceUrl
             };
             _sqsClient = new AmazonSQSClient(amazonSqsClientConfig);
         }

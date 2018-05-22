@@ -27,6 +27,7 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
         public Type FinalReducerFuncType => typeof(MakeAccidentCountFinalReducer);
 
         public string AmazonSqsBaseUrl => "https://sqs.eu-west-1.amazonaws.com/525470265062/";
+        public string AmazonSqsServiceUrl => "https://sqs.eu-west-1.amazonaws.com/";
         public string AmazonS3BucketName => "serverless-mapreduce"; 
         public int QueueItemsPerRunningWorker => 10;
         public int MaxQueueItemsBatchSizeToProcessPerWorker => 10;

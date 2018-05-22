@@ -26,6 +26,7 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions
         Type FinalReducerFuncType { get; }
         
         string AmazonSqsBaseUrl { get; }
+        string AmazonSqsServiceUrl { get; }
         string AmazonS3BucketName { get; }
         
         int QueueItemsPerRunningWorker { get; }

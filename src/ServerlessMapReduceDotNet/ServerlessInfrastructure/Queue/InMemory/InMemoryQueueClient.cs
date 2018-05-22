@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
-using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
-namespace ServerlessMapReduceDotNet.Queue.InMemory
+namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory
 {
     public class InMemoryQueueClient : IQueueClient
     {

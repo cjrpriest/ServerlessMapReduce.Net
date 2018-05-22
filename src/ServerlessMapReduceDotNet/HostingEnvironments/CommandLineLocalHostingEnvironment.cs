@@ -3,12 +3,12 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.MapReduce.Commands.Map;
-using ServerlessMapReduceDotNet.Queue.InMemory;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
@@ -16,7 +16,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
     {
         protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
         
-        public override IConfig ConfigFactory() => new Config();
+        public override IConfig ConfigFactory() => new CommandLineLocalConfig();
 
         protected override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
 

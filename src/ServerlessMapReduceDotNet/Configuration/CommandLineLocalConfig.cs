@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
 namespace ServerlessMapReduceDotNet.Configuration
 {
-    internal class Config : IConfig
+    internal class CommandLineLocalConfig : IConfig
     {
         public string WorkerRecordFolder => "workerRecord";
         public string FinalReducedFolder => "finalReduction";
@@ -14,20 +14,20 @@ namespace ServerlessMapReduceDotNet.Configuration
         public string MappedFolder => "mapped";
         public string ReducedFolder => "reduced";
 
-        public string RawDataQueueName => "serverless-mapreduce-rawdata.fifo";
-        public string IngestedQueueName => "serverless-mapreduce-ingested.fifo";
-        public string MappedQueueName => "serverless-mapreduce-mapped.fifo";
-        public string ReducedQueueName => "serverless-mapreduce-reduced.fifo";
-        public string FinalReducedQueueName => "serverless-mapreduce-finalreduced.fifo";
-        public string CommandQueueName => "serverless-mapreduce-commandQueue.fifo";
+        public string RawDataQueueName => "serverless-mapreduce-rawdata";
+        public string IngestedQueueName => "serverless-mapreduce-ingested";
+        public string MappedQueueName => "serverless-mapreduce-mapped";
+        public string ReducedQueueName => "serverless-mapreduce-reduced";
+        public string FinalReducedQueueName => "serverless-mapreduce-finalreduced";
+        public string CommandQueueName => "serverless-mapreduce-commandQueue";
 
-        public int IngesterMaxLinesPerFile => 10000;
+        public int IngesterMaxLinesPerFile => 1000;
         public Type MapperFuncType => typeof(MostAccidentProneMapper);
         public Type ReducerFuncType => typeof(MostAccidentProneReducer);
         public Type FinalReducerFuncType => typeof(MostAccidentProneFinalReducer);
 
-        public string AmazonSqsBaseUrl => "https://sqs.eu-west-1.amazonaws.com/525470265062/";
-        public string AmazonSqsServiceUrl => "https://sqs.eu-west-1.amazonaws.com";
+        public string AmazonSqsBaseUrl => "http://localhost:9324/queue/";
+        public string AmazonSqsServiceUrl => "http://localhost:9324";
         public string AmazonS3BucketName => "serverless-mapreduce";
         public int QueueItemsPerRunningWorker => 10;
         public int MaxQueueItemsBatchSizeToProcessPerWorker => 10;
