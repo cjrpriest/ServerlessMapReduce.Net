@@ -47,8 +47,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne
             if (mostAccidentProneKvp1.Value == null) throw new ArgumentNullException($"{nameof(mostAccidentProneKvp1)}.{nameof(mostAccidentProneKvp1.Value)}");
             if (mostAccidentProneKvp2.Value == null) throw new ArgumentNullException($"{nameof(mostAccidentProneKvp2)}.{nameof(mostAccidentProneKvp2.Value)}");
 
-            return mostAccidentProneKvp1.Value.RegistrationsPerAccident.CompareTo(
-                mostAccidentProneKvp2.Value.RegistrationsPerAccident);
+            return mostAccidentProneKvp2.Value.RegistrationsPerAccident.CompareTo(
+                mostAccidentProneKvp1.Value.RegistrationsPerAccident);
         }
 
         private AccidentStats ReduceAccidentStats(AccidentStats stats1, AccidentStats stats2)
