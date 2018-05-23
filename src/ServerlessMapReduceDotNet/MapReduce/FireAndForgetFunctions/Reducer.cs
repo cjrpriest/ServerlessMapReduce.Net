@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
@@ -10,6 +11,7 @@ using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Commands.Reduce;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Helpers;
 
 namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
 {
@@ -91,7 +93,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
                 await reducedDataStreamWriter.WriteLineAsync(reducedCountsJson);
 
                 await reducedDataStreamWriter.FlushAsync();
-                var reducedOutputKey = $"{_config.ReducedFolder}/{Guid.NewGuid()}";
+                var reducedOutputKey = $"{_config.ReducedFolder}/{ProcessedMessageIdsHash(queueMessages)}";
 
                 // Without this being in a transaction, there is the risk of incorrect results
                 MarkProcessed(_config.MappedQueueName, mappedQueueMessages);
@@ -113,6 +115,20 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
             {
                 _queueClient.MessageProcessed(queueName, queueMessage.MessageId).Wait();
             }
+        }
+
+        private string ProcessedMessageIdsHash(IReadOnlyCollection<QueueMessage> messages)
+        {
+            var messageIds = new StringBuilder();
+            
+            foreach (var message in messages)
+            {
+                messageIds.Append(message.MessageId);
+            }
+
+            var hash = HashHelper.GetHashSha256(messageIds.ToString());
+
+            return hash;
         }
     }
 }
