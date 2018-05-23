@@ -21,7 +21,7 @@ namespace ServerlessMapReduceDotNet.Configuration
         public string FinalReducedQueueName => "serverless-mapreduce-finalreduced";
         public string CommandQueueName => "serverless-mapreduce-commandQueue";
 
-        public int IngesterMaxLinesPerFile => 1000;
+        public int IngesterMaxLinesPerFile => 10000;
         public Type MapperFuncType => typeof(MostAccidentProneMapper);
         public Type ReducerFuncType => typeof(MostAccidentProneReducer);
         public Type FinalReducerFuncType => typeof(MostAccidentProneFinalReducer);

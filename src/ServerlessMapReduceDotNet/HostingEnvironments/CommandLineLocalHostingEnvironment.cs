@@ -9,12 +9,13 @@ using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.ObjectStore;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs;
+using ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.InMemory;
 
 namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public class CommandLineLocalHostingEnvironment : HostingEnvironment
     {
-        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonSqsQueueClient>();
+        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
         
         public override IConfig ConfigFactory() => new CommandLineLocalConfig();
 
