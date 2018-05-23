@@ -1,0 +1,65 @@
+// Can't use the nice '~react-md/src/scss/react-md' since this isn't being bundled with webpack
+@import '../node_modules/react-md/src/scss/react-md';
+
+// Variable overrides
+$md-primary-color: $md-indigo-500;
+$md-secondary-color: $md-pink-a-400;
+
+// generated from https://google-webfonts-helper.herokuapp.com/fonts/roboto?subsets=latin
+// font:Roboto, charset: latin, styles: 300,regular,500,700
+/* roboto-300 - latin */
+//noinspection CssUnknownTarget
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/roboto-v16-latin-300.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('/fonts/roboto-v16-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/fonts/roboto-v16-latin-300.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/fonts/roboto-v16-latin-300.woff') format('woff'), /* Modern Browsers */
+  url('/fonts/roboto-v16-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/fonts/roboto-v16-latin-300.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+/* roboto-regular - latin */
+//noinspection CssUnknownTarget
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/roboto-v16-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('/fonts/roboto-v16-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/fonts/roboto-v16-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/fonts/roboto-v16-latin-regular.woff') format('woff'), /* Modern Browsers */
+  url('/fonts/roboto-v16-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/fonts/roboto-v16-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+/* roboto-500 - latin */
+//noinspection CssUnknownTarget
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/roboto-v16-latin-500.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+  url('/fonts/roboto-v16-latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/fonts/roboto-v16-latin-500.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/fonts/roboto-v16-latin-500.woff') format('woff'), /* Modern Browsers */
+  url('/fonts/roboto-v16-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/fonts/roboto-v16-latin-500.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+/* roboto-700 - latin */
+//noinspection CssUnknownTarget
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/roboto-v16-latin-700.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+  url('/fonts/roboto-v16-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/fonts/roboto-v16-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/fonts/roboto-v16-latin-700.woff') format('woff'), /* Modern Browsers */
+  url('/fonts/roboto-v16-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/fonts/roboto-v16-latin-700.svg#Roboto') format('svg'); /* Legacy iOS */
+}

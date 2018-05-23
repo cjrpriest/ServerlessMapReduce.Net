@@ -1,0 +1,8 @@
+@import 'globals';
+
+@include react-md-everything;
+@include host-material-icons('/fonts/material-icons');
+
+body {
+  margin: 0;
+}
