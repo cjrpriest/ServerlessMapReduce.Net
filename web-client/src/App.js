@@ -79,30 +79,53 @@ class App extends Component {
                 //console.log("Message", data.Messages[0]);
                 if (!data.Messages[0]) return;
 
-                console.log(data.Messages[0].Body);
+                // console.log(data.Messages[0].Body);
                 let obj = JSON.parse(data.Messages[0].Body);
                 console.log(obj);
 
-                if (obj.Command.$type !== "ServerlessMapReduceDotNet.MapReduce.Commands.Map.BatchMapDataCommand, ServerlessMapReduceDotNet") {
-                    console.log("not a BatchMapDataCommand");
-                    return;
-                }
+                // if (obj.Command.$type !== "ServerlessMapReduceDotNet.MapReduce.Commands.Map.BatchMapDataCommand, ServerlessMapReduceDotNet") {
+                //     console.log("not a BatchMapDataCommand");
+                //     return;
+                // }
 
                 let mostAccidentProneKvps = [];
                 for (let i = 0, len = obj.Command.Lines.$values.length; i < len; i++) {
                     let line = obj.Command.Lines.$values[i];
-                    let data = line.split(',');
-                    let manufacturer = data[22].toUpperCase();
-                    let mostAccidentProneKvp = {
-                        $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
-                        Key: manufacturer,
-                        Value: {
-                            NoOfAccidents : 1,
-                            NoOfCarsRegistered: 0,
-                            RegistrationsPerAccident: 0.0
+                    let lineValues = line.split(',');
+                    if (lineValues.length > 20) {
+                        // accident stat
+                        let ageOfVehicleStr = lineValues[19];
+                        let ageOfVehicle = parseInt(ageOfVehicleStr);
+                        if (ageOfVehicle === 1) {
+                            let manufacturer = lineValues[22].toUpperCase();
+                            let mostAccidentProneKvp = {
+                                $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
+                                Key: manufacturer,
+                                Value: {
+                                    NoOfAccidents: 1,
+                                    NoOfCarsRegistered: 0,
+                                    RegistrationsPerAccident: 0.0
+                                }
+                            };
+                            mostAccidentProneKvps.push(mostAccidentProneKvp);
                         }
-                    };
-                    mostAccidentProneKvps.push(mostAccidentProneKvp);
+                    } else {
+                        // registrations stat
+                        let manufacturer = lineValues[0].toUpperCase();
+                        let dirtyInt = lineValues[6];
+                        let cleanInt = dirtyInt.replace(',','').replace('"','');
+                        let noOfRegistrations = parseInt(cleanInt);
+                        let mostAccidentProneKvp = {
+                            $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
+                            Key: manufacturer,
+                            Value: {
+                                NoOfAccidents : 0,
+                                NoOfCarsRegistered: noOfRegistrations,
+                                RegistrationsPerAccident: 0.0
+                            }
+                        };
+                        mostAccidentProneKvps.push(mostAccidentProneKvp);
+                    }
                 }
                 let writeMappedDataCommand = {
                     "$type":"AzureFromTheTrenches.Commanding.Abstractions.Model.NoResultCommandWrapper, AzureFromTheTrenches.Commanding.Abstractions",
