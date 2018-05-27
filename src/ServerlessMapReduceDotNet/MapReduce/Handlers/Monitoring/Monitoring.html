@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="2">
     <title>Monitoring</title>
 </head>
 <body>
@@ -10,7 +11,7 @@
             <tr>
                 <th>Component</th>
                 <th>Worker Instance Count</th>
-                <th>Output Queue Size</th>
+                <th>Queue Size</th>
             </tr>
         </thead>
         <tbody>
@@ -38,6 +39,11 @@
                 <td>Final Reducer</td>
                 <td>#runningFinalReducersCount#</td>
                 <td>#finalReducedQueueCount#</td>
+            </tr>
+            <tr>
+                <td>Remote Command Executers</td>
+                <td>n/a</td>
+                <td>#remoteCommandExecuterQueueCount#</td>
             </tr>
             <tr>
                 <td>Command Executer</td>

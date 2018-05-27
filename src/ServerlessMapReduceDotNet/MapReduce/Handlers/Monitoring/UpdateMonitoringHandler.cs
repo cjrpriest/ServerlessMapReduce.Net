@@ -33,6 +33,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
             var reducedQueueCount = await _queueClient.MessageCount(_config.ReducedQueueName);
             var finalReducedQueueCount = await _queueClient.MessageCount(_config.FinalReducedQueueName);
             var commandExecuterQueueCount = await _queueClient.MessageCount(_config.CommandQueueName);
+            var remoteCommandExecuterQueueCount = await _queueClient.MessageCount(_config.RemoteCommandQueueName);
 
             var workerRecords = await _workerRecordStoreService.GetAllWorkerRecords();
             var ingesterWorkerRecords = workerRecords.Where(x => x.Type == "ingester" && !x.HasTerminated);
@@ -59,7 +60,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring
                 .Replace("#runningFinalReducersCount#", runningFinalReducerCount.ToString())
                 .Replace("#finalReducedQueueCount#", finalReducedQueueCount.ToString())
                 .Replace("#runningCommandExecuterCount#", runningCommandExecuterCount.ToString())
-                .Replace("#commandExecuterQueueCount#", commandExecuterQueueCount.ToString());
+                .Replace("#commandExecuterQueueCount#", commandExecuterQueueCount.ToString())
+                .Replace("#remoteCommandExecuterQueueCount#", remoteCommandExecuterQueueCount.ToString());
 
 
             using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(html)))
