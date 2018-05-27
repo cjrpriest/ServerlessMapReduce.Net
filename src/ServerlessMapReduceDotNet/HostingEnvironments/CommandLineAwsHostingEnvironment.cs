@@ -18,7 +18,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         
         public override IConfig ConfigFactory() => new Config();
 
-        protected override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
+        protected override Type TerminatorHandlerTypeFactory() => typeof(CommandLineTerminateCommandHandler);
 
         protected override Type FireAndForgetHandlerType() => typeof(AsyncHandler<,>);
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using ServerlessMapReduceDotNet.Model;
@@ -20,8 +21,10 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs
 
             var amazonSqsClientConfig = new AmazonSQSConfig
             {
-                ServiceURL = _config.AmazonSqsServiceUrl
+                ServiceURL = _config.AmazonSqsServiceUrl,
             };
+//            var creds = new StoredProfileAWSCredentials("chrisamido");
+//            _sqsClient = new AmazonSQSClient(creds, amazonSqsClientConfig);
             _sqsClient = new AmazonSQSClient(amazonSqsClientConfig);
         }
         

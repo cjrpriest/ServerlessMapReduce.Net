@@ -18,7 +18,7 @@ namespace ServerlessMapReduceDotNet.Tests.IntegrationTests
 
         public override IConfig ConfigFactory() => new IntegrationTestConfig();
 
-        protected override Type TerminatorHandlerTypeFactory() => typeof(TerminateCommandHandler);
+        protected override Type TerminatorHandlerTypeFactory() => typeof(CommandLineTerminateCommandHandler);
 
         protected override Type FireAndForgetHandlerType() => typeof(SyncHandler<,>);
 

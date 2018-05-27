@@ -9,6 +9,11 @@ import AWS from 'aws-sdk';
 
 class App extends Component {
 
+    queueUrlPrefix = "https://sqs.eu-west-1.amazonaws.com/525470265062/";
+    queueUrlPostfix = ".fifo";
+    region = "eu-west-1";
+    endoint = "https://sqs.eu-west-1.amazonaws.com";
+
     constructor() {
         super();
         this.state = {
@@ -31,7 +36,7 @@ class App extends Component {
               <span>No of messages in queue: {this.state.queueSize}</span>
               <Button raised onClick={() => {
                   clearInterval();
-                  this.setState({intervalHandler: setInterval(() => this.getQueueInfo(this), 50)});
+                  this.setState({intervalHandler: setInterval(() => this.getQueueInfo(this), 1000)});
                 }
               }>Go!</Button>
               <Button raised onClick={() => clearInterval(this.state.intervalHandler)}>Stop!</Button>
@@ -39,17 +44,29 @@ class App extends Component {
         );
       }
 
+      getQueueUrl(queueName) {
+        return this.queueUrlPrefix + queueName + this.queueUrlPostfix;
+      }
+
+    uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        )
+    }
+
     getQueueInfo(self) {
-        let sqs = new AWS.SQS({apiVersion: '2012-11-05', endpoint: 'http://localhost:9324'});
+        let sqs = new AWS.SQS({apiVersion: '2012-11-05'});//, endpoint: this.endoint});
 
-        let creds = new AWS.Credentials('foo', 'bar');
+        sqs.config.update({
+            region: this.region,
+            accessKeyId: 'AKIAIPV5N5QMERUWT2OQ',
+            secretAccessKey: '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'});
 
-        sqs.config.update(creds);
-        sqs.config.update({region: 'eu-central-1'});
+        let remoteQueueUrl = self.getQueueUrl('serverless-mapreduce-remoteCommandQueue');
 
         //let self = this;
         sqs.getQueueAttributes({
-            QueueUrl: 'http://localhost:9324/queue/serverless-mapreduce-remoteCommandQueue',
+            QueueUrl: remoteQueueUrl,
             AttributeNames: ['ApproximateNumberOfMessages']
         }, function (err, data) {
             if (err) {
@@ -67,7 +84,7 @@ class App extends Component {
             MessageAttributeNames: [
                 "All"
             ],
-            QueueUrl: 'http://localhost:9324/queue/serverless-mapreduce-remoteCommandQueue',
+            QueueUrl: self.getQueueUrl('serverless-mapreduce-remoteCommandQueue'),
             VisibilityTimeout: 5,
             WaitTimeSeconds: 0
         };
@@ -82,11 +99,6 @@ class App extends Component {
                 // console.log(data.Messages[0].Body);
                 let obj = JSON.parse(data.Messages[0].Body);
                 console.log(obj);
-
-                // if (obj.Command.$type !== "ServerlessMapReduceDotNet.MapReduce.Commands.Map.BatchMapDataCommand, ServerlessMapReduceDotNet") {
-                //     console.log("not a BatchMapDataCommand");
-                //     return;
-                // }
 
                 let mostAccidentProneKvps = [];
                 for (let i = 0, len = obj.Command.Lines.$values.length; i < len; i++) {
@@ -139,8 +151,10 @@ class App extends Component {
                 console.log(writeMappedDataCommand);
 
                 sqs.sendMessage({
-                    QueueUrl: 'http://localhost:9324/queue/serverless-mapreduce-commandQueue',
-                    MessageBody: JSON.stringify(writeMappedDataCommand)
+                    QueueUrl: self.getQueueUrl('serverless-mapreduce-commandQueue'),
+                    MessageBody: JSON.stringify(writeMappedDataCommand),
+                    MessageGroupId: self.uuidv4(),
+                    MessageDeduplicationId: self.uuidv4()
                 }, function(err, data) {
                     if (err) {
                         console.log("Receive Error", err);
@@ -149,8 +163,10 @@ class App extends Component {
                     }
                 });
 
+                let remoteQueue = self.getQueueUrl('serverless-mapreduce-remoteCommandQueue');
+
                 sqs.deleteMessage({
-                    QueueUrl: 'http://localhost:9324/queue/serverless-mapreduce-remoteCommandQueue',
+                    QueueUrl: remoteQueue,
                     ReceiptHandle: data.Messages[0].ReceiptHandle
                 }, function(err) {
                     if (err) {
@@ -159,16 +175,7 @@ class App extends Component {
                 })
             }
         });
-
-        // let params = {};
-        //
-        // sqs.listQueues(params, function(err, data) {
-        //     if (err) {
-        //         console.log("Error", err);
-        //     } else {
-        //         console.log("Success", data.QueueUrls);
-        //     }
-        // });
+        
     }
 
 }

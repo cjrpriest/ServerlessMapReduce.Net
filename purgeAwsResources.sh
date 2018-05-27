@@ -8,3 +8,5 @@ aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062
 aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062/serverless-mapreduce-mapped.fifo --profile=chrisamido
 aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062/serverless-mapreduce-rawdata.fifo --profile=chrisamido
 aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062/serverless-mapreduce-reduced.fifo --profile=chrisamido
+aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062/serverless-mapreduce-commandQueue.fifo --profile=chrisamido
+aws sqs purge-queue --queue-url https://sqs.eu-west-1.amazonaws.com/525470265062/serverless-mapreduce-remoteCommandQueue.fifo --profile=chrisamido

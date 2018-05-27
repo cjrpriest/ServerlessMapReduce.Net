@@ -4,11 +4,11 @@ using ServerlessMapReduceDotNet.Commands;
 
 namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers.Terminate
 {
-    class TerminateCommandHandler : TerminateCommandHandlerBase, ICommandHandler<TerminateCommand>
+    class DoNothingTerminateCommandHandler : ICommandHandler<TerminateCommand>
     {
         public Task ExecuteAsync(TerminateCommand command)
         {
-            IsTerminated = true;
+            // do nothing
             return Task.CompletedTask;
         }
     }
