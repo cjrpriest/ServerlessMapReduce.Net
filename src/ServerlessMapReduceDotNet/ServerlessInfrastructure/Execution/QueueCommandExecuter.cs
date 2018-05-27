@@ -21,7 +21,7 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution
         {
             var serializerSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
             var commandJson = JsonConvert.SerializeObject(command, Formatting.None, serializerSettings);
-            await _queueClient.Enqueue(_config.CommandQueueName, commandJson);
+            await _queueClient.Enqueue(_config.RemoteCommandQueueName, commandJson);
             return default (TResult);
         }
     }

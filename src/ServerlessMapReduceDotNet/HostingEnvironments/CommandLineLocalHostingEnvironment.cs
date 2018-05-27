@@ -15,7 +15,7 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
 {
     public class CommandLineLocalHostingEnvironment : HostingEnvironment
     {
-        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<InMemoryQueueClient>();
+        protected override IQueueClient QueueClientFactory(IServiceProvider serviceProvider) => serviceProvider.GetService<AmazonSqsQueueClient>();
         
         public override IConfig ConfigFactory() => new CommandLineLocalConfig();
 

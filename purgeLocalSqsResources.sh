@@ -4,3 +4,4 @@ aws --endpoint-url http://localhost:9324 sqs purge-queue --queue-url http://loca
 aws --endpoint-url http://localhost:9324 sqs purge-queue --queue-url http://localhost:9324/queue/serverless-mapreduce-rawdata
 aws --endpoint-url http://localhost:9324 sqs purge-queue --queue-url http://localhost:9324/queue/serverless-mapreduce-reduced
 aws --endpoint-url http://localhost:9324 sqs purge-queue --queue-url http://localhost:9324/queue/serverless-mapreduce-commandQueue
+aws --endpoint-url http://localhost:9324 sqs purge-queue --queue-url http://localhost:9324/queue/serverless-mapreduce-remoteCommandQueue

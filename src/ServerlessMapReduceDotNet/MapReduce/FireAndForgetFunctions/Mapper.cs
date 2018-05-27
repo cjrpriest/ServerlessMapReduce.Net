@@ -59,6 +59,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
                         ContextQueueMessage = ingestedQueueMessage
                     });
                 }
+
+                await _queueClient.MessageProcessed(_config.IngestedQueueName, ingestedQueueMessage.MessageId);
             }
             
             await _workerRecordStoreService.RecordHasTerminated("mapper", instanceWorkerId);
