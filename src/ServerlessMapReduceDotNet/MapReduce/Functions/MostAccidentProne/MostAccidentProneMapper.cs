@@ -11,18 +11,18 @@ namespace ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne
             var data = line.Split(',');
             if (LineIsFromAccidentStats(data))
             {
-                if (VehicleWasLessThanOneYearOldAtTimeOfAccident(data))
-                {
+                //if (VehicleWasLessThanOneYearOldAtTimeOfAccident(data))
+                //{
                     var manufacturer = data[22].ToUpper();
                     var accidentStats = new AccidentStats {NoOfAccidents = 1};
                     var mostAccidentProneKvp = new MostAccidentProneKvp(manufacturer, accidentStats);
                     return new KeyValuePairCollection { mostAccidentProneKvp };
-                }
+                //}
             }
             else
             {
                 var manufacturer = data[0].ToUpper();
-                var noOfRegistrations = ParseDirtyInt(data[6]);
+                var noOfRegistrations = ParseDirtyInt(data[2]);
                 var accidentStats = new AccidentStats {NoOfCarsRegistered = noOfRegistrations};
                 var mostAccidentProneKvp = new MostAccidentProneKvp(manufacturer, accidentStats);
                 return new KeyValuePairCollection { mostAccidentProneKvp };
@@ -47,7 +47,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne
         private int ParseDirtyInt(string dirtyInt)
         {
             var cleanInt = dirtyInt.Replace(",", String.Empty).Replace("\"", String.Empty);
-            return Int32.Parse(cleanInt);
+            var success = Int32.TryParse(cleanInt, out int result);
+            return success ? result : 0;
         }
     }
 }

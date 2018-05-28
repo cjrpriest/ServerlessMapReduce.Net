@@ -42,8 +42,6 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
                     DataStream = memoryStream
                 });
                 await _queueClient.Enqueue(_config.MappedQueueName, mapperOutputKey);
-
-                await _queueClient.MessageProcessed(_config.IngestedQueueName, command.ContextQueueMessage.MessageId);
             }
         }
     }

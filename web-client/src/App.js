@@ -106,9 +106,9 @@ class App extends Component {
                     let lineValues = line.split(',');
                     if (lineValues.length > 20) {
                         // accident stat
-                        let ageOfVehicleStr = lineValues[19];
-                        let ageOfVehicle = parseInt(ageOfVehicleStr);
-                        if (ageOfVehicle === 1) {
+                        // let ageOfVehicleStr = lineValues[19];
+                        // let ageOfVehicle = parseInt(ageOfVehicleStr);
+                        // if (ageOfVehicle === 1) {
                             let manufacturer = lineValues[22].toUpperCase();
                             let mostAccidentProneKvp = {
                                 $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
@@ -120,12 +120,13 @@ class App extends Component {
                                 }
                             };
                             mostAccidentProneKvps.push(mostAccidentProneKvp);
-                        }
+                        // }
                     } else {
                         // registrations stat
                         let manufacturer = lineValues[0].toUpperCase();
-                        let dirtyInt = lineValues[6];
+                        let dirtyInt = lineValues[2];
                         let cleanInt = dirtyInt.replace(',','').replace('"','');
+                        if (cleanInt === '') cleanInt = '0';
                         let noOfRegistrations = parseInt(cleanInt);
                         let mostAccidentProneKvp = {
                             $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
@@ -175,7 +176,7 @@ class App extends Component {
                 })
             }
         });
-        
+
     }
 
 }
