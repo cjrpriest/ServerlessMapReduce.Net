@@ -15,6 +15,7 @@ using ServerlessMapReduceDotNet.MapReduce.Functions.MostAccidentProne;
 using ServerlessMapReduceDotNet.MapReduce.Handlers;
 using ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper;
 using ServerlessMapReduceDotNet.MapReduce.Handlers.Monitoring;
+using ServerlessMapReduceDotNet.MapReduce.Handlers.Reducer;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Commands;
@@ -77,7 +78,10 @@ namespace ServerlessMapReduceDotNet
                 .Register<FinalReducerFuncHandler>()
 
                 .Register<BatchMapDataCommandHandler>()
-                .Register<WriteMappedDataCommandHandler>();
+                .Register<WriteMappedDataCommandHandler>()
+                
+                .Register<BatchReduceDataCommandHandler>()
+                .Register<WriteReducedDataCommandHandler>();
 
             hostingEnvironment
                 .RegisterHostingEnvironment(commandRegistry, serviceCollection, () => serviceProvider, x =>

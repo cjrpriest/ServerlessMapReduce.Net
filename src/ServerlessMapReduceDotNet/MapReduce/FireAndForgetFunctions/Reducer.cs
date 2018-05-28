@@ -52,61 +52,48 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
             queueMessages.AddRange(mappedQueueMessages);
             queueMessages.AddRange(reducedQueueMessages);
             
-            using (var reducedDataMemoryStream = new MemoryStream())
-            using (var reducedDataStreamWriter = new StreamWriter(reducedDataMemoryStream))
+            var inputCounts = new KeyValuePairCollection();
+
+            foreach (var queueMessage in queueMessages)
             {
-                var inputCounts = new KeyValuePairCollection();
-
-                foreach (var queueMessage in queueMessages)
+                Stream mappedObjectStream = await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = queueMessage.Message});
+                using (var streamReader = new StreamReader(mappedObjectStream))
                 {
-                    Stream mappedObjectStream = await _commandDispatcher.DispatchAsync(new RetrieveObjectCommand{Key = queueMessage.Message});
-                    using (var streamReader = new StreamReader(mappedObjectStream))
+                    while (!streamReader.EndOfStream)
                     {
-                        while (!streamReader.EndOfStream)
+                        var line = await streamReader.ReadLineAsync();
+                        try
                         {
-                            var line = await streamReader.ReadLineAsync();
-                            try
-                            {
-                                var keyValuePairs = JsonConvert.DeserializeObject<KeyValuePairCollection>(line,
-                                    new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
+                            var keyValuePairs = JsonConvert.DeserializeObject<KeyValuePairCollection>(line,
+                                new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
 
-                                foreach (var keyValuePair in keyValuePairs)
-                                {
-                                    if (keyValuePair.GetType() == typeof(CountKvp))
-                                        inputCounts.Add((CountKvp) keyValuePair);
-                                    if (keyValuePair.GetType() == typeof(MostAccidentProneKvp))
-                                        inputCounts.Add((MostAccidentProneKvp) keyValuePair);
-                                }
-                            }
-                            catch (JsonSerializationException e)
+                            foreach (var keyValuePair in keyValuePairs)
                             {
-                                Console.WriteLine($"Error white deserialising value [{line}]");
+                                if (keyValuePair.GetType() == typeof(CountKvp))
+                                    inputCounts.Add((CountKvp) keyValuePair);
+                                if (keyValuePair.GetType() == typeof(MostAccidentProneKvp))
+                                    inputCounts.Add((MostAccidentProneKvp) keyValuePair);
                             }
+                        }
+                        catch (JsonSerializationException e)
+                        {
+                            Console.WriteLine($"Error white deserialising value [{line}]");
                         }
                     }
                 }
-
-                KeyValuePairCollection reducedCounts = await _commandDispatcher.DispatchAsync(new ReducerFuncCommand { InputKeyValuePairs= inputCounts});
-                
-                var reducedCountsJson = JsonConvert.SerializeObject(reducedCounts, Formatting.None,
-                    new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
-                await reducedDataStreamWriter.WriteLineAsync(reducedCountsJson);
-
-                await reducedDataStreamWriter.FlushAsync();
-                var reducedOutputKey = $"{_config.ReducedFolder}/{ProcessedMessageIdsHash(queueMessages)}";
-
-                // Without this being in a transaction, there is the risk of incorrect results
-                MarkProcessed(_config.MappedQueueName, mappedQueueMessages);
-                MarkProcessed(_config.ReducedQueueName, reducedQueueMessages);
-                await _commandDispatcher.DispatchAsync(new StoreObjectCommand
-                {
-                    Key = reducedOutputKey,
-                    DataStream = reducedDataMemoryStream
-                });
-                await _queueClient.Enqueue(_config.ReducedQueueName, reducedOutputKey);
-                await _workerRecordStoreService.RecordHasTerminated("reducer", instanceWorkerId);
-                // Transaction end
             }
+
+            await _commandDispatcher.DispatchAsync(new BatchReduceDataCommand
+            {
+                InputKeyValuePairs = inputCounts,
+                ProcessedMessageIdsHash = ProcessedMessageIdsHash(queueMessages)
+            });
+            
+            // Without this being in a transaction, there is the risk of incorrect results
+            MarkProcessed(_config.MappedQueueName, mappedQueueMessages);
+            MarkProcessed(_config.ReducedQueueName, reducedQueueMessages);
+            await _workerRecordStoreService.RecordHasTerminated("reducer", instanceWorkerId);
+            // Transaction end
         }
 
         private void MarkProcessed(string queueName, IList<QueueMessage> queueMessages)
