@@ -81,12 +81,12 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Queue.AmazonSqs
             var getQueueAttributesRequest = new GetQueueAttributesRequest
             {
                 QueueUrl = QueueUrlFactory(queueName),
-                AttributeNames = new List<string> {"ApproximateNumberOfMessages"}
+                AttributeNames = new List<string> {"ApproximateNumberOfMessages", "ApproximateNumberOfMessagesNotVisible"}
             };
             var getQueueAttributesResponse = await _sqsClient.GetQueueAttributesAsync(getQueueAttributesRequest);
             
             // for FIFO queues this number is, in fact, exact
-            return getQueueAttributesResponse.ApproximateNumberOfMessages;
+            return getQueueAttributesResponse.ApproximateNumberOfMessages + getQueueAttributesResponse.ApproximateNumberOfMessagesNotVisible;
         }
 
         private string QueueUrlFactory(string queueName)
