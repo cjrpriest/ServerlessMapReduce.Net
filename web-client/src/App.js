@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './amido.png';
 import './App.css';
 
 import Button from 'react-md/lib/Buttons/Button';
 
 import AWS from 'aws-sdk';
-// import { Credentials } from 'aws-sdk/lib/credentials';
 
 class App extends Component {
 
@@ -19,7 +18,8 @@ class App extends Component {
         this.state = {
             queueContents: "",
             queueSize: 0,
-            intervalHandler: null
+            intervalHandler: null,
+            running: false
         };
     }
 
@@ -28,18 +28,19 @@ class App extends Component {
           <div className="App">
             <header className="App-header">
               <img src={logo} className="App-logo" alt="logo" />
-              <h1 className="App-title">Welcome to React</h1>
+              <h1 className="App-title">hey.crispy.wtf</h1>
             </header>
-            <p className="App-intro">
-              To get started, edit <code>src/App.js</code> and save to reload.
-            </p>
-              <span>No of messages in queue: {this.state.queueSize}</span>
-              <Button raised onClick={() => {
-                  clearInterval();
-                  this.setState({intervalHandler: setInterval(() => this.getQueueInfo(this), 1000)});
+              <p>Left to process: {this.state.queueSize}</p>
+              <p><Button raised onClick={() => {
+                  this.setState({running: true});
+                  this.doWork(this);
                 }
-              }>Go!</Button>
-              <Button raised onClick={() => clearInterval(this.state.intervalHandler)}>Stop!</Button>
+              }>Go Map Reduce!</Button>
+              </p>
+              <Button raised onClick={() => {
+                  this.setState({running: false})
+              }
+              }>Don't Map Reduce!</Button>
           </div>
         );
       }
@@ -54,7 +55,7 @@ class App extends Component {
         )
     }
 
-    getQueueInfo(self) {
+    doWork(self) {
         let sqs = new AWS.SQS({apiVersion: '2012-11-05'});//, endpoint: this.endoint});
 
         sqs.config.update({
@@ -64,7 +65,6 @@ class App extends Component {
 
         let remoteQueueUrl = self.getQueueUrl('serverless-mapreduce-remoteCommandQueue');
 
-        //let self = this;
         sqs.getQueueAttributes({
             QueueUrl: remoteQueueUrl,
             AttributeNames: ['ApproximateNumberOfMessages']
@@ -92,77 +92,135 @@ class App extends Component {
         sqs.receiveMessage(params, function(err, data) {
             if (err) {
                 console.log("Receive Error", err);
+                self.triggerAnotherDoWork(self);
             } else if (data.Messages) {
-                //console.log("Message", data.Messages[0]);
-                if (!data.Messages[0]) return;
+                if (!data.Messages[0]) {
+                    self.triggerAnotherDoWork(self);
+                    return;
+                }
 
-                // console.log(data.Messages[0].Body);
                 let obj = JSON.parse(data.Messages[0].Body);
                 console.log(obj);
 
-                let mostAccidentProneKvps = [];
-                for (let i = 0, len = obj.Command.Lines.$values.length; i < len; i++) {
-                    let line = obj.Command.Lines.$values[i];
-                    let lineValues = line.split(',');
-                    if (lineValues.length > 20) {
-                        // accident stat
-                        // let ageOfVehicleStr = lineValues[19];
-                        // let ageOfVehicle = parseInt(ageOfVehicleStr);
-                        // if (ageOfVehicle === 1) {
+                let writeDataCommand = '';
+                if (obj.Command.$type === "ServerlessMapReduceDotNet.MapReduce.Commands.Map.BatchMapDataCommand, ServerlessMapReduceDotNet") {
+                    let mostAccidentProneKvps = [];
+                    for (let i = 0, len = obj.Command.Lines.$values.length; i < len; i++) {
+                        let line = obj.Command.Lines.$values[i];
+                        let lineValues = line.split(',');
+                        if (lineValues.length > 20) {
                             let manufacturer = lineValues[22].toUpperCase();
                             let mostAccidentProneKvp = {
-                                $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
-                                Key: manufacturer,
-                                Value: {
-                                    NoOfAccidents: 1,
-                                    NoOfCarsRegistered: 0,
-                                    RegistrationsPerAccident: 0.0
+                                M: manufacturer,
+                                S: {
+                                    A: 1,
+                                    C: 0,
+                                    R: 0.0
                                 }
                             };
                             mostAccidentProneKvps.push(mostAccidentProneKvp);
-                        // }
-                    } else {
-                        // registrations stat
-                        let manufacturer = lineValues[0].toUpperCase();
-                        let dirtyInt = lineValues[2];
-                        let cleanInt = dirtyInt.replace(',','').replace('"','');
-                        if (cleanInt === '') cleanInt = '0';
-                        let noOfRegistrations = parseInt(cleanInt);
-                        let mostAccidentProneKvp = {
-                            $type: "ServerlessMapReduceDotNet.Model.MostAccidentProneKvp, ServerlessMapReduceDotNet",
-                            Key: manufacturer,
-                            Value: {
-                                NoOfAccidents : 0,
-                                NoOfCarsRegistered: noOfRegistrations,
-                                RegistrationsPerAccident: 0.0
+                        } else {
+                            // registrations stat
+                            let manufacturer = lineValues[0].toUpperCase();
+                            let dirtyInt = lineValues[2];
+                            let cleanInt = dirtyInt.replace(',','').replace('"','');
+                            if (cleanInt === '') cleanInt = '0';
+                            let noOfRegistrations = parseInt(cleanInt);
+                            let mostAccidentProneKvp = {
+                                M: manufacturer,
+                                S: {
+                                    A : 0,
+                                    C: noOfRegistrations,
+                                    R: 0.0
+                                }
+                            };
+                            mostAccidentProneKvps.push(mostAccidentProneKvp);
+                        }
+                    }
+                    writeDataCommand = {
+                        "$type":"AzureFromTheTrenches.Commanding.Abstractions.Model.NoResultCommandWrapper, AzureFromTheTrenches.Commanding.Abstractions",
+                        Command: {
+                            "$type":"ServerlessMapReduceDotNet.MapReduce.Commands.Map.WriteMappedDataCommand, ServerlessMapReduceDotNet",
+                            ResultOfMap2: mostAccidentProneKvps,
+                            ContextQueueMessage: obj.Command.ContextQueueMessage
+                        }
+                    };
+                } else if (obj.Command.$type === "ServerlessMapReduceDotNet.MapReduce.Commands.Reduce.BatchReduceDataCommand, ServerlessMapReduceDotNet") {
+                    let mostAccidentProneKvps = {};
+
+                    for (let i = 0, len = obj.Command.InputKeyValuePairs2.length; i < len; i++) {
+                        if (!mostAccidentProneKvps[obj.Command.InputKeyValuePairs2[i].M]){
+                            mostAccidentProneKvps[obj.Command.InputKeyValuePairs2[i].M] = {
+                                A: 0,
+                                C: 0,
+                                R: 0.0
+                            }
+                        }
+
+                        let data1 = mostAccidentProneKvps[obj.Command.InputKeyValuePairs2[i].M];
+                        let data2 = obj.Command.InputKeyValuePairs2[i].S;
+
+                        let newNoOfAccidents = data1.A + data2.A;
+                        let newNoOfCarsRegistered = data1.C + data2.C;
+
+                        let registrationsPerAccident = newNoOfCarsRegistered / newNoOfAccidents;
+                        if (isFinite(registrationsPerAccident) === false) {
+                            registrationsPerAccident = 999999
+                        } else {
+                            registrationsPerAccident = registrationsPerAccident || 0;
+                        }
+
+                        mostAccidentProneKvps[obj.Command.InputKeyValuePairs2[i].M] = {
+                            A: newNoOfAccidents,
+                            C: newNoOfCarsRegistered,
+                            R: registrationsPerAccident
+                        };
+                    }
+
+                    let reducedData = [];
+
+                    for (let manufacturer in mostAccidentProneKvps) {
+                        reducedData.push({
+                                "M": manufacturer,
+                                "S": mostAccidentProneKvps[manufacturer]
+                            });
+                    }
+
+                    reducedData.sort(function(a,b) {
+                       return b.S.R - a.S.R;
+                    });
+
+                    if (reducedData.length !== 0) {
+                        writeDataCommand = {
+                            "$type":"AzureFromTheTrenches.Commanding.Abstractions.Model.NoResultCommandWrapper, AzureFromTheTrenches.Commanding.Abstractions",
+                            Command: {
+                                "$type":"ServerlessMapReduceDotNet.MapReduce.Commands.Reduce.WriteReducedDataCommand, ServerlessMapReduceDotNet",
+                                ReducedData: reducedData,
+                                ProcessedMessageIdsHash: obj.Command.ProcessedMessageIdsHash
                             }
                         };
-                        mostAccidentProneKvps.push(mostAccidentProneKvp);
                     }
                 }
-                let writeMappedDataCommand = {
-                    "$type":"AzureFromTheTrenches.Commanding.Abstractions.Model.NoResultCommandWrapper, AzureFromTheTrenches.Commanding.Abstractions",
-                    Command: {
-                        "$type":"ServerlessMapReduceDotNet.MapReduce.Commands.Map.WriteMappedDataCommand, ServerlessMapReduceDotNet",
-                        ResultOfMap: mostAccidentProneKvps,
-                        ContextQueueMessage: obj.Command.ContextQueueMessage
-                    }
-                };
 
-                console.log(writeMappedDataCommand);
+                if (writeDataCommand !== '') {
 
-                sqs.sendMessage({
-                    QueueUrl: self.getQueueUrl('serverless-mapreduce-commandQueue'),
-                    MessageBody: JSON.stringify(writeMappedDataCommand),
-                    MessageGroupId: self.uuidv4(),
-                    MessageDeduplicationId: self.uuidv4()
-                }, function(err, data) {
-                    if (err) {
-                        console.log("Receive Error", err);
-                    } else {
-                        console.log(data);
-                    }
-                });
+                    console.log(writeDataCommand);
+
+                    sqs.sendMessage({
+                        QueueUrl: self.getQueueUrl('serverless-mapreduce-commandQueue'),
+                        MessageBody: JSON.stringify(writeDataCommand),
+                        MessageGroupId: self.uuidv4(),
+                        MessageDeduplicationId: self.uuidv4()
+                    }, function(err, data) {
+                        if (err) {
+                            console.log("Receive Error", err);
+                        } else {
+                            console.log(data);
+                        }
+                    });
+                } else {
+                    console.log("no output");
+                }
 
                 let remoteQueue = self.getQueueUrl('serverless-mapreduce-remoteCommandQueue');
 
@@ -173,10 +231,19 @@ class App extends Component {
                     if (err) {
                         console.log("Delete Error", err);
                     }
-                })
-            }
-        });
+                });
 
+            }
+            self.triggerAnotherDoWork(self);
+        });
+    }
+
+    triggerAnotherDoWork(self) {
+        if (this.state.running) {
+            setTimeout(function () {
+                self.doWork(self);
+            }, 2000)
+        }
     }
 
 }
