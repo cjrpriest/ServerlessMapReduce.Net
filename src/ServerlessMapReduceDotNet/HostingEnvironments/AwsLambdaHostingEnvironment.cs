@@ -3,6 +3,7 @@ using AzureFromTheTrenches.Commanding.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServerlessMapReduceDotNet.Configuration;
 using ServerlessMapReduceDotNet.MapReduce.Commands.Map;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Reduce;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Handlers;
@@ -30,6 +31,9 @@ namespace ServerlessMapReduceDotNet.HostingEnvironments
         {
             commandRegistry.Register<BatchMapDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
             commandRegistry.Register<WriteMappedDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            
+            commandRegistry.Register<BatchReduceDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
+            commandRegistry.Register<WriteReducedDataCommand>(() => serviceProviderFactory().GetService<QueueCommandDispatcher>());
         }
     }
 }
