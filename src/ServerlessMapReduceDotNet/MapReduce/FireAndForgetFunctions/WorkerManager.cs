@@ -93,6 +93,8 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
             return await _queueClient.MessageCount(_config.RawDataQueueName) == 0
                    && await _queueClient.MessageCount(_config.IngestedQueueName) == 0
                    && await _queueClient.MessageCount(_config.MappedQueueName) == 0
+                   && await _queueClient.MessageCount(_config.CommandQueueName) == 0
+                   && await _queueClient.MessageCount(_config.RemoteCommandQueueName) == 0
                    && await _queueClient.MessageCount(_config.ReducedQueueName) == 1;
         }
 
