@@ -19,7 +19,7 @@ namespace ServerlessMapReduceDotNet.ServerlessInfrastructure.Execution
         
         public async Task<TResult> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var serializerSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+            var serializerSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
             var commandJson = JsonConvert.SerializeObject(command, Formatting.None, serializerSettings);
             await _queueClient.Enqueue(_config.RemoteCommandQueueName, commandJson);
             return default (TResult);

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureFromTheTrenches.Commanding.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Commands.Map;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Reduce;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
@@ -32,10 +34,28 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
                 keyValuePairCollection.AddRange(mapperFunc.Map(line));
             }
 
+            var resultOfMap2 = new List<CompressedMostAccidentProneData>();
+
+            foreach (var kvp in keyValuePairCollection)
+            {
+                var mostAccidentProneKvp = kvp as MostAccidentProneKvp;
+                resultOfMap2.Add(new CompressedMostAccidentProneData
+                {
+                    M = mostAccidentProneKvp.Key,
+                    S = new CompressedAccidentStats
+                    {
+                        A = mostAccidentProneKvp.Value.NoOfAccidents,
+                        C = mostAccidentProneKvp.Value.NoOfCarsRegistered,
+                        R = mostAccidentProneKvp.Value.RegistrationsPerAccident
+                    }
+                });
+            }
+
             await _commandDispatcher.DispatchAsync(new WriteMappedDataCommand
             {
                 ContextQueueMessage = command.ContextQueueMessage,
-                ResultOfMap = keyValuePairCollection
+//                ResultOfMap = keyValuePairCollection,
+                ResultOfMap2 = resultOfMap2
             });
         }
     }

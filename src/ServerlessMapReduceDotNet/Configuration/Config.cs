@@ -22,7 +22,7 @@ namespace ServerlessMapReduceDotNet.Configuration
         public string CommandQueueName => "serverless-mapreduce-commandQueue.fifo";
         public string RemoteCommandQueueName => "serverless-mapreduce-remoteCommandQueue.fifo";
 
-        public int IngesterMaxLinesPerFile => 1000;
+        public int IngesterMaxLinesPerFile => 500;
         public Type MapperFuncType => typeof(MostAccidentProneMapper);
         public Type ReducerFuncType => typeof(MostAccidentProneReducer);
         public Type FinalReducerFuncType => typeof(MostAccidentProneFinalReducer);

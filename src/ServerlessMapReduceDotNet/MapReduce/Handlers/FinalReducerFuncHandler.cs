@@ -23,7 +23,7 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers
         {
             var finalReducerFunc = (IFinalReduceFunc) _serviceProvider.GetService(_config.FinalReducerFuncType);
 
-            var lines = finalReducerFunc.FinalReduce(command.KeyValuePair);
+            var lines = finalReducerFunc.FinalReduce2(command.CompressedMostAccidentProneData);
 
             return lines;
         }

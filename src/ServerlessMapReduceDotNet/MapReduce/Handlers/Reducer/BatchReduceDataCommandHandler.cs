@@ -24,15 +24,15 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Reducer
         
         public async Task ExecuteAsync(BatchReduceDataCommand command)
         {
-            var reducerFunc = (IReducerFunc) _serviceProvider.GetService(_config.ReducerFuncType);
-
-            var keyValuePairCollection = reducerFunc.Reduce(command.InputKeyValuePairs);
-
-            await _commandDispatcher.DispatchAsync(new WriteReducedDataCommand
-            {
-                ReducedData = keyValuePairCollection,
-                ProcessedMessageIdsHash = command.ProcessedMessageIdsHash
-            });
+//            var reducerFunc = (IReducerFunc) _serviceProvider.GetService(_config.ReducerFuncType);
+//
+//            var keyValuePairCollection = reducerFunc.Reduce(command.InputKeyValuePairs);
+//
+//            await _commandDispatcher.DispatchAsync(new WriteReducedDataCommand
+//            {
+//                ReducedData = keyValuePairCollection,
+//                ProcessedMessageIdsHash = command.ProcessedMessageIdsHash
+//            });
         }
     }
 }

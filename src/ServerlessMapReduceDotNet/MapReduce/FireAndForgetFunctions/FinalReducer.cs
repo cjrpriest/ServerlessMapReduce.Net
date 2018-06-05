@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using ServerlessMapReduceDotNet.Commands.ObjectStore;
 using ServerlessMapReduceDotNet.MapReduce.Abstractions;
 using ServerlessMapReduceDotNet.MapReduce.Commands.FinalReduce;
+using ServerlessMapReduceDotNet.MapReduce.Commands.Reduce;
 using ServerlessMapReduceDotNet.Model;
 using ServerlessMapReduceDotNet.ServerlessInfrastructure.Abstractions;
 
@@ -49,12 +51,16 @@ namespace ServerlessMapReduceDotNet.MapReduce.FireAndForgetFunctions
                 if (!streamReader.EndOfStream)
                 {
                     var line = await streamReader.ReadLineAsync();
-                    var keyValuePairs = JsonConvert.DeserializeObject<KeyValuePairCollection>(line,
+                    var keyValuePairs = JsonConvert.DeserializeObject<List<CompressedMostAccidentProneData>>(line,
                         new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
 
                     foreach (var keyValuePair in keyValuePairs)
                     {
-                        var linesToWrite = (await _commandDispatcher.DispatchAsync(new FinalReducerFuncCommand{KeyValuePair = keyValuePair})).Result;
+                        var linesToWrite = (await _commandDispatcher.DispatchAsync(
+                            new FinalReducerFuncCommand
+                            {
+                                CompressedMostAccidentProneData = keyValuePair
+                            })).Result;
                         foreach (var lineToWrite in linesToWrite)
                             await streamWriter.WriteLineAsync(lineToWrite);
                     }

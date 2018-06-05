@@ -27,9 +27,9 @@ namespace ServerlessMapReduceDotNet.MapReduce.Handlers.Mapper
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))
             {
-                if (command.ResultOfMap.Count > 0)
+                if (command.ResultOfMap2.Count > 0)
                 {
-                    var keyValuePairsJson = JsonConvert.SerializeObject(command.ResultOfMap, Formatting.None,
+                    var keyValuePairsJson = JsonConvert.SerializeObject(command.ResultOfMap2, Formatting.None,
                         new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto});
                     await streamWriter.WriteLineAsync(keyValuePairsJson);
                 }
